@@ -29,7 +29,7 @@
     </Group>
     
     <!-- 下一个方块预览 -->
-    <VBox layoutX="200" layoutY="30" spacing="5" alignment="CENTER">
+    <VBox layoutX="275" layoutY="30" spacing="5" alignment="CENTER">
         <Label text="NEXT" styleClass="nextBrickLabel"/>
         <GridPane fx:id="nextBrickPanel" hgap="1" vgap="1" styleClass="nextBrick" alignment="CENTER">
             <padding>
