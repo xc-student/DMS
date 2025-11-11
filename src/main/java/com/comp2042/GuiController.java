@@ -10,6 +10,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
+import javafx.scene.control.Label;
 import javafx.scene.effect.Reflection;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -58,6 +59,14 @@ public class GuiController implements Initializable {
     @FXML
     private GameOverPanel gameOverPanel;
 
+    // FXML注入的分数标签
+    @FXML
+    private Label scoreLabel;
+
+    // FXML注入的下一个方块预览面板
+    @FXML
+    private GridPane nextBrickPanel;
+
     // 游戏背景显示矩阵，存储每个格子的Rectangle对象
     private Rectangle[][] displayMatrix;
 
@@ -66,6 +75,9 @@ public class GuiController implements Initializable {
 
     // 当前方块显示矩阵，存储方块每个部分的Rectangle对象
     private Rectangle[][] rectangles;
+
+    // 下一个方块显示矩阵，存储下一个方块每个部分的Rectangle对象
+    private Rectangle[][] nextBrickRectangles;
 
     // 游戏自动下落的时间线动画
     private Timeline timeLine;
@@ -124,6 +136,12 @@ public class GuiController implements Initializable {
                     }
                 }
                 
+                // 处理暂停/继续：空格键或P键
+                if (keyEvent.getCode() == KeyCode.SPACE || keyEvent.getCode() == KeyCode.P) {
+                    togglePause();
+                    keyEvent.consume();
+                }
+                
                 // 处理新游戏：N键
                 if (keyEvent.getCode() == KeyCode.N) {
                     newGame(null);
@@ -176,6 +194,9 @@ public class GuiController implements Initializable {
         // 设置方块面板的位置（根据方块在游戏板中的位置）
         brickPanel.setLayoutX(gamePanel.getLayoutX() + brick.getxPosition() * brickPanel.getVgap() + brick.getxPosition() * BRICK_SIZE);
         brickPanel.setLayoutY(-42 + gamePanel.getLayoutY() + brick.getyPosition() * brickPanel.getHgap() + brick.getyPosition() * BRICK_SIZE);
+
+        // 初始化下一个方块预览
+        initNextBrickPreview(brick.getNextBrickData());
 
         // 创建自动下落的时间线动画
         timeLine = new Timeline(new KeyFrame(
@@ -246,6 +267,9 @@ public class GuiController implements Initializable {
                     setRectangleData(brick.getBrickData()[i][j], rectangles[i][j]);
                 }
             }
+            
+            // 刷新下一个方块预览
+            refreshNextBrickPreview(brick.getNextBrickData());
         }
     }
 
@@ -311,12 +335,59 @@ public class GuiController implements Initializable {
     }
 
     /**
-     * 绑定分数显示（当前未实现）
+     * 绑定分数显示
+     * 将分数属性绑定到Label，实现实时更新
      * 
      * @param integerProperty 分数属性
      */
     public void bindScore(IntegerProperty integerProperty) {
-        // TODO: 实现分数显示绑定
+        if (scoreLabel != null) {
+            // 将分数属性绑定到Label的文本属性，使用StringConverter格式化
+            scoreLabel.textProperty().bind(integerProperty.asString());
+        }
+    }
+
+    /**
+     * 初始化下一个方块预览
+     * 创建下一个方块的显示矩阵
+     * 
+     * @param nextBrickData 下一个方块的数据矩阵
+     */
+    private void initNextBrickPreview(int[][] nextBrickData) {
+        if (nextBrickPanel != null && nextBrickData != null) {
+            // 清除之前的预览
+            nextBrickPanel.getChildren().clear();
+            
+            // 创建下一个方块显示矩阵
+            if (nextBrickData.length > 0 && nextBrickData[0].length > 0) {
+                nextBrickRectangles = new Rectangle[nextBrickData.length][nextBrickData[0].length];
+                for (int i = 0; i < nextBrickData.length; i++) {
+                    for (int j = 0; j < nextBrickData[i].length; j++) {
+                        Rectangle rectangle = new Rectangle(BRICK_SIZE - 2, BRICK_SIZE - 2);
+                        rectangle.setFill(getFillColor(nextBrickData[i][j]));
+                        setRectangleData(nextBrickData[i][j], rectangle);
+                        nextBrickRectangles[i][j] = rectangle;
+                        nextBrickPanel.add(rectangle, j, i);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 刷新下一个方块预览
+     * 更新下一个方块的显示
+     * 
+     * @param nextBrickData 下一个方块的数据矩阵
+     */
+    private void refreshNextBrickPreview(int[][] nextBrickData) {
+        if (nextBrickPanel != null && nextBrickData != null && nextBrickRectangles != null) {
+            for (int i = 0; i < nextBrickData.length && i < nextBrickRectangles.length; i++) {
+                for (int j = 0; j < nextBrickData[i].length && j < nextBrickRectangles[i].length; j++) {
+                    setRectangleData(nextBrickData[i][j], nextBrickRectangles[i][j]);
+                }
+            }
+        }
     }
 
     /**
@@ -339,6 +410,14 @@ public class GuiController implements Initializable {
         timeLine.stop(); // 停止当前动画
         gameOverPanel.setVisible(false); // 隐藏游戏结束面板
         eventListener.createNewGame(); // 通知控制器创建新游戏
+        
+        // 获取新的游戏视图数据来初始化下一个方块预览
+        // 通过触发一次空的下落事件来获取当前视图数据
+        DownData downData = eventListener.onDownEvent(new MoveEvent(EventType.DOWN, EventSource.THREAD));
+        if (downData != null && downData.getViewData() != null) {
+            initNextBrickPreview(downData.getViewData().getNextBrickData());
+        }
+        
         gamePanel.requestFocus(); // 设置焦点
         timeLine.play(); // 重新开始自动下落
         isPause.setValue(Boolean.FALSE); // 取消暂停状态
@@ -346,12 +425,32 @@ public class GuiController implements Initializable {
     }
 
     /**
-     * 暂停游戏（当前未实现具体逻辑）
+     * 暂停游戏
+     * 切换游戏的暂停/继续状态
      * 
      * @param actionEvent 动作事件
      */
     public void pauseGame(ActionEvent actionEvent) {
+        togglePause();
         gamePanel.requestFocus(); // 保持焦点
-        // TODO: 实现暂停游戏逻辑
+    }
+
+    /**
+     * 切换暂停/继续状态
+     * 暂停时停止自动下落动画，继续时恢复动画
+     */
+    private void togglePause() {
+        if (isGameOver.getValue() == Boolean.FALSE) {
+            if (isPause.getValue() == Boolean.FALSE) {
+                // 暂停游戏
+                timeLine.pause();
+                isPause.setValue(Boolean.TRUE);
+            } else {
+                // 继续游戏
+                timeLine.play();
+                isPause.setValue(Boolean.FALSE);
+            }
+            gamePanel.requestFocus();
+        }
     }
 }
