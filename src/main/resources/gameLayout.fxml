@@ -23,7 +23,7 @@
         </top>
     </BorderPane>
 
-    <Group fx:id="groupNotification" layoutX="14" layoutY="203">
+    <Group fx:id="groupNotification" layoutX="14" layoutY="103">
         <VBox alignment="CENTER">
             <GameOverPanel fx:id="gameOverPanel"/>
             <PausePanel fx:id="pausePanel"/>
