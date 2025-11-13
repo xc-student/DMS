@@ -7,7 +7,7 @@ import javafx.scene.layout.BorderPane;
 public class PausePanel extends BorderPane {
 
     public PausePanel() {
-        final Label pauseLabel = new Label("Game Paused");
+        final Label pauseLabel = new Label("Game \nPaused");
         pauseLabel.getStyleClass().add("pauseStyle");
         setCenter(pauseLabel);
     }
