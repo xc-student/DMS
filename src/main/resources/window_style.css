@@ -64,6 +64,13 @@
     -fx-background-color: red;
 }
 
+.pauseStyle {
+    -fx-font-family: "Let's go Digital";
+    -fx-font-size: 48;
+    -fx-text-fill: yellow;
+    -fx-effect: dropshadow(three-pass-box, rgba(255, 255, 0, 0.8), 10, 0.0, 0, 2);
+}
+
 .scoreClass{
     -fx-font-family: "Let's go Digital";
     -fx-font-size: 38;
