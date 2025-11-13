@@ -59,6 +59,10 @@ public class GuiController implements Initializable {
     @FXML
     private GameOverPanel gameOverPanel;
 
+    // FXML注入的暂停面板
+    @FXML
+    private PausePanel pausePanel;
+
     // FXML注入的分数标签
     @FXML
     private Label scoreLabel;
@@ -149,8 +153,9 @@ public class GuiController implements Initializable {
             }
         });
         
-        // 初始时隐藏游戏结束面板
+        // 初始时隐藏游戏结束面板和暂停面板
         gameOverPanel.setVisible(false);
+        pausePanel.setVisible(false);
 
         // 设置反射效果（用于视觉增强）
         final Reflection reflection = new Reflection();
@@ -409,6 +414,7 @@ public class GuiController implements Initializable {
     public void newGame(ActionEvent actionEvent) {
         timeLine.stop(); // 停止当前动画
         gameOverPanel.setVisible(false); // 隐藏游戏结束面板
+        pausePanel.setVisible(false); // 隐藏暂停面板
         eventListener.createNewGame(); // 通知控制器创建新游戏
         
         // 获取新的游戏视图数据来初始化下一个方块预览
@@ -445,10 +451,12 @@ public class GuiController implements Initializable {
                 // 暂停游戏
                 timeLine.pause();
                 isPause.setValue(Boolean.TRUE);
+                pausePanel.setVisible(true); // 显示暂停提示
             } else {
                 // 继续游戏
                 timeLine.play();
                 isPause.setValue(Boolean.FALSE);
+                pausePanel.setVisible(false); // 隐藏暂停提示
             }
             gamePanel.requestFocus();
         }
