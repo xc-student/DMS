@@ -69,6 +69,13 @@ public class GuiController implements Initializable {
     // FXML注入的分数标签
     @FXML
     private Label scoreLabel;
+    
+    // FXML注入的按钮
+    @FXML
+    private javafx.scene.control.Button newGameButton;
+    
+    @FXML
+    private javafx.scene.control.Button pauseButton;
 
     // FXML注入的下一个方块预览面板
     @FXML
@@ -95,6 +102,7 @@ public class GuiController implements Initializable {
     // 当前方块的显示位置（用于平滑动画）
     private double currentBrickY;
     private int lastBrickYPosition;
+    private boolean skipAnimation;
 
     // 游戏暂停状态属性
     private final BooleanProperty isPause = new SimpleBooleanProperty();
@@ -177,6 +185,26 @@ public class GuiController implements Initializable {
         // 将反射效果应用到分数标签
         if (scoreLabel != null) {
             scoreLabel.setEffect(reflection);
+        }
+        
+        // 手动绑定按钮事件（确保按钮可点击）
+        if (newGameButton != null) {
+            newGameButton.setOnAction(e -> {
+                System.out.println("New Game button clicked!"); // 调试输出
+                newGame(e);
+            });
+            // 确保按钮可以接收鼠标事件
+            newGameButton.setMouseTransparent(false);
+            newGameButton.setDisable(false);
+        }
+        if (pauseButton != null) {
+            pauseButton.setOnAction(e -> {
+                System.out.println("Pause button clicked!"); // 调试输出
+                pauseGame(e);
+            });
+            // 确保按钮可以接收鼠标事件
+            pauseButton.setMouseTransparent(false);
+            pauseButton.setDisable(false);
         }
     }
 
@@ -303,19 +331,26 @@ public class GuiController implements Initializable {
                 // 设置基础位置为目标位置
                 brickPanel.setLayoutY(targetY);
                 
-                // 创建平滑下降动画（使用偏移量）
-                fallTransition = new TranslateTransition(Duration.millis(150), brickPanel);
-                fallTransition.setFromY(offset); // 从当前位置的偏移量
-                fallTransition.setToY(0); // 到目标位置（偏移量为0）
-                fallTransition.setOnFinished(e -> {
-                    // 动画完成后，确保偏移量为0
+                if (skipAnimation) {
+                    // 用户主动下落，直接跳到目标位置
                     brickPanel.setTranslateY(0);
                     currentBrickY = targetY;
-                });
-                fallTransition.play();
-                
-                // 更新跟踪变量
-                lastBrickYPosition = brick.getyPosition();
+                    lastBrickYPosition = brick.getyPosition();
+                } else {
+                    // 创建平滑下降动画（使用偏移量）
+                    fallTransition = new TranslateTransition(Duration.millis(150), brickPanel);
+                    fallTransition.setFromY(offset); // 从当前位置的偏移量
+                    fallTransition.setToY(0); // 到目标位置（偏移量为0）
+                    fallTransition.setOnFinished(e -> {
+                        // 动画完成后，确保偏移量为0
+                        brickPanel.setTranslateY(0);
+                        currentBrickY = targetY;
+                    });
+                    fallTransition.play();
+                    
+                    // 更新跟踪变量
+                    lastBrickYPosition = brick.getyPosition();
+                }
             } else {
                 // Y位置没变，直接设置位置
                 brickPanel.setLayoutY(targetY);
@@ -371,6 +406,7 @@ public class GuiController implements Initializable {
      */
     private void moveDown(MoveEvent event) {
         if (isPause.getValue() == Boolean.FALSE) {
+            skipAnimation = event.getEventSource() == EventSource.USER;
             // 调用事件监听器处理下落逻辑
             DownData downData = eventListener.onDownEvent(event);
             
@@ -383,6 +419,7 @@ public class GuiController implements Initializable {
             
             // 刷新方块显示
             refreshBrick(downData.getViewData());
+            skipAnimation = false;
         }
         gamePanel.requestFocus(); // 确保游戏面板保持焦点
     }
@@ -490,7 +527,7 @@ public class GuiController implements Initializable {
         alert.showAndWait().ifPresent(response -> {
             if (response == okButton) {
                 // 用户确认，开始新游戏
-                newGame(null);
+                startNewGameDirectly(null);
             } else {
                 // 用户取消，恢复游戏状态
                 if (wasPlaying[0] && isGameOver.getValue() == Boolean.FALSE) {
@@ -501,12 +538,22 @@ public class GuiController implements Initializable {
     }
 
     /**
-     * 开始新游戏
+     * 开始新游戏（按钮点击时调用，显示确认对话框）
+     * 重置游戏状态，重新开始游戏
+     * 
+     * @param actionEvent 动作事件
+     */
+    public void newGame(ActionEvent actionEvent) {
+        confirmNewGame();
+    }
+    
+    /**
+     * 直接开始新游戏（不显示确认对话框）
      * 重置游戏状态，重新开始游戏
      * 
      * @param actionEvent 动作事件（未使用）
      */
-    public void newGame(ActionEvent actionEvent) {
+    private void startNewGameDirectly(ActionEvent actionEvent) {
         timeLine.stop(); // 停止当前动画
         gameOverPanel.setVisible(false); // 隐藏游戏结束面板
         pausePanel.setVisible(false); // 隐藏暂停面板
