@@ -39,6 +39,11 @@
             </padding>
         </GridPane>
         <VBox spacing="8" alignment="CENTER">
+            <Label text="DIFFICULTY" styleClass="nextBrickLabel" style="-fx-font-size: 12px;"/>
+            <HBox spacing="5" alignment="CENTER">
+                <Button fx:id="easyButton" text="Easy" styleClass="difficultyButton" prefWidth="60"/>
+                <Button fx:id="hardButton" text="Hard" styleClass="difficultyButton" prefWidth="60"/>
+            </HBox>
             <Button fx:id="newGameButton" text="New Game" styleClass="gameButton" prefWidth="120"/>
             <Button fx:id="pauseButton" text="Pause" styleClass="gameButton" prefWidth="120"/>
         </VBox>

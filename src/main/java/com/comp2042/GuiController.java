@@ -109,6 +109,16 @@ public class GuiController implements Initializable {
 
     // 游戏结束状态属性
     private final BooleanProperty isGameOver = new SimpleBooleanProperty();
+    
+    // 难度模式：true = 困难，false = 简单
+    private boolean isHardMode = false;
+    
+    // 难度按钮
+    @FXML
+    private javafx.scene.control.Button easyButton;
+    
+    @FXML
+    private javafx.scene.control.Button hardButton;
 
     /**
      * FXML初始化方法
@@ -206,6 +216,52 @@ public class GuiController implements Initializable {
             pauseButton.setMouseTransparent(false);
             pauseButton.setDisable(false);
         }
+        
+        // 绑定难度选择按钮
+        if (easyButton != null) {
+            easyButton.setOnAction(e -> setDifficulty(false));
+            easyButton.setMouseTransparent(false);
+            easyButton.setDisable(false);
+            // 初始状态：简单模式被选中
+            updateDifficultyButtonStyle(false);
+        }
+        if (hardButton != null) {
+            hardButton.setOnAction(e -> setDifficulty(true));
+            hardButton.setMouseTransparent(false);
+            hardButton.setDisable(false);
+        }
+    }
+    
+    /**
+     * 设置游戏难度
+     * @param hardMode true = 困难模式，false = 简单模式
+     */
+    private void setDifficulty(boolean hardMode) {
+        isHardMode = hardMode;
+        updateDifficultyButtonStyle(hardMode);
+        
+        // 如果游戏正在进行，更新时间线速度
+        if (timeLine != null && isPause.getValue() == Boolean.FALSE && isGameOver.getValue() == Boolean.FALSE) {
+            createTimeline();
+        }
+    }
+    
+    /**
+     * 更新难度按钮的样式，显示当前选中的难度
+     * @param hardMode true = 困难模式被选中
+     */
+    private void updateDifficultyButtonStyle(boolean hardMode) {
+        if (easyButton != null && hardButton != null) {
+            if (hardMode) {
+                // 困难模式被选中
+                easyButton.getStyleClass().remove("difficultyButtonSelected");
+                hardButton.getStyleClass().add("difficultyButtonSelected");
+            } else {
+                // 简单模式被选中
+                easyButton.getStyleClass().add("difficultyButtonSelected");
+                hardButton.getStyleClass().remove("difficultyButtonSelected");
+            }
+        }
     }
 
     /**
@@ -252,13 +308,33 @@ public class GuiController implements Initializable {
         // 初始化下一个方块预览
         initNextBrickPreview(brick.getNextBrickData());
 
-        // 创建自动下落的时间线动画
+        // 创建自动下落的时间线动画（根据难度设置速度）
+        createTimeline();
+    }
+    
+    /**
+     * 创建或更新自动下落的时间线动画
+     * 根据当前难度模式设置下降速度
+     */
+    private void createTimeline() {
+        // 如果已有时间线，先停止
+        if (timeLine != null) {
+            timeLine.stop();
+        }
+        
+        // 根据难度设置下降间隔：简单模式400ms，困难模式200ms
+        long fallInterval = isHardMode ? 200 : 400;
+        
         timeLine = new Timeline(new KeyFrame(
-                Duration.millis(400), // 每400毫秒执行一次
+                Duration.millis(fallInterval),
                 ae -> moveDown(new MoveEvent(EventType.DOWN, EventSource.THREAD)) // 自动下落事件
         ));
         timeLine.setCycleCount(Timeline.INDEFINITE); // 无限循环
-        timeLine.play(); // 开始播放动画
+        
+        // 如果游戏未暂停且未结束，开始播放
+        if (isPause.getValue() == Boolean.FALSE && isGameOver.getValue() == Boolean.FALSE) {
+            timeLine.play();
+        }
     }
 
     /**
@@ -567,7 +643,8 @@ public class GuiController implements Initializable {
         }
         
         gamePanel.requestFocus(); // 设置焦点
-        timeLine.play(); // 重新开始自动下落
+        // 根据当前难度重新创建时间线
+        createTimeline();
         isPause.setValue(Boolean.FALSE); // 取消暂停状态
         isGameOver.setValue(Boolean.FALSE); // 取消游戏结束状态
     }
