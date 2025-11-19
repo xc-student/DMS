@@ -5,8 +5,10 @@ import java.util.ResourceBundle;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 /**
@@ -45,12 +47,15 @@ public class Main extends Application {
         primaryStage.setTitle("TetrisJFX");
         
         // 创建场景，设置窗口大小（对战模式需要更大的窗口）
-        Scene scene = new Scene(root, 800, 810);
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+        Scene scene = new Scene(root, screenBounds.getWidth(), screenBounds.getHeight());
         
         // 将场景设置到主舞台
         primaryStage.setScene(scene);
         
-        // 显示游戏窗口
+        // 设置全屏显示
+        primaryStage.setFullScreen(true);
+        primaryStage.setFullScreenExitHint("");
         primaryStage.show();
         
         // 创建游戏控制器，传入GUI控制器实例

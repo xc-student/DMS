@@ -1,7 +1,11 @@
 package com.comp2042;
 
+import java.net.URL;
+import java.util.ResourceBundle;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -9,7 +13,10 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
@@ -17,14 +24,13 @@ import javafx.scene.effect.Reflection;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
-
-import java.net.URL;
-import java.util.ResourceBundle;
 
 /**
  * GUI控制器类
@@ -83,7 +89,21 @@ public class GuiController implements Initializable {
     // FXML注入的下一个方块预览面板
     @FXML
     private GridPane nextBrickPanel;
+    @FXML
+    private VBox player1Options;
 
+    // 玩家1与玩家2面板的布局位置
+    private static final double SINGLE_PLAYER_BOARD_X = 900;
+    private static final double SINGLE_PLAYER_OPTIONS_X = 1200;
+    private static final double VS_PLAYER1_BOARD_X = 1300;
+    private static final double VS_PLAYER2_BOARD_X = 500;
+    private static final double VS_PLAYER1_OPTIONS_X = 1600;
+    private static final double VS_PLAYER2_OPTIONS_X = 800;
+    private static final double PLAYER2_BOARD_DEFAULT_X = 420;
+    private static final double PLAYER2_OPTIONS_DEFAULT_X = 655;
+    private static final double NOTIFICATION_OFFSET_X = 20;
+    private static final double NOTIFICATION_OFFSET_Y = 40;
+    
     // 游戏背景显示矩阵，存储每个格子的Rectangle对象
     private Rectangle[][] displayMatrix;
 
@@ -131,7 +151,9 @@ public class GuiController implements Initializable {
     @FXML
     private GameOverPanel gameOverPanel2; // 玩家2的游戏结束面板
     @FXML
-    private Group gameOverGroup2; // 玩家2的游戏结束面板组
+    private PausePanel pausePanel2; // 玩家2的暂停面板
+    @FXML
+    private Group groupNotification2; // 玩家2的通知组
     @FXML
     private javafx.scene.layout.BorderPane gameBoard2; // 玩家2的游戏板容器
     @FXML
@@ -148,6 +170,10 @@ public class GuiController implements Initializable {
     
     // 对战模式状态
     private boolean isVsMode = false;
+
+    // 裁剪区域，避免背景角超出圆角边框
+    private final Rectangle gamePanelClip = new Rectangle();
+    private final Rectangle gamePanel2Clip = new Rectangle();
 
     /**
      * FXML初始化方法
@@ -284,6 +310,7 @@ public class GuiController implements Initializable {
             updateDifficultyButtonStyle(false);
         }
         if (hardButton != null) {
+            
             hardButton.setOnAction(e -> setDifficulty(true));
             hardButton.setMouseTransparent(false);
             hardButton.setDisable(false);
@@ -309,12 +336,23 @@ public class GuiController implements Initializable {
         if (scoreLabel2 != null) {
             scoreLabel2.setVisible(false);
         }
-        if (gameOverGroup2 != null) {
-            gameOverGroup2.setVisible(false);
+        if (groupNotification2 != null) {
+            groupNotification2.setVisible(false);
         }
         if (gameOverPanel2 != null) {
             gameOverPanel2.setVisible(false);
         }
+        if (pausePanel2 != null) {
+            pausePanel2.setVisible(false);
+        }
+        
+        // 初始化布局
+        applySinglePlayerLayout();
+        Platform.runLater(() -> {
+            updateNotificationPosition();
+            // configurePanelClip(gamePanel, gamePanelClip);
+            // configurePanelClip(gamePanel2, gamePanel2Clip);
+        });
     }
     
     /**
@@ -375,7 +413,7 @@ public class GuiController implements Initializable {
         for (int i = 0; i < brick.getBrickData().length; i++) {
             for (int j = 0; j < brick.getBrickData()[i].length; j++) {
                 Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
-                rectangle.setFill(getFillColor(brick.getBrickData()[i][j])); // 根据方块类型设置颜色
+                setRectangleData(brick.getBrickData()[i][j], rectangle, true); // 高亮当前下落方块
                 rectangles[i][j] = rectangle;
                 brickPanel.add(rectangle, j, i);
             }
@@ -386,10 +424,12 @@ public class GuiController implements Initializable {
         javafx.geometry.Bounds panelBounds = gamePanel.getBoundsInParent();
         double panelX = gameBoard.getLayoutX() + panelBounds.getMinX();
         double panelY = gameBoard.getLayoutY() + panelBounds.getMinY();
-        brickPanel.setLayoutX(panelX + brick.getxPosition() * (brickPanel.getVgap() + BRICK_SIZE));
+        brickPanel.setLayoutX(panelX + brick.getxPosition() * (brickPanel.getVgap() + BRICK_SIZE) + 1);
         // 游戏板从第2行开始显示（前两行是隐藏区域），所以需要减去2行
         double targetY = panelY + (brick.getyPosition() - 2) * (brickPanel.getHgap() + BRICK_SIZE) - 8;
         brickPanel.setLayoutY(targetY);
+
+        bringBrickPanelsToFront();
 
         // 初始化下一个方块预览
         initNextBrickPreview(brick.getNextBrickData());
@@ -485,17 +525,19 @@ public class GuiController implements Initializable {
             javafx.geometry.Bounds panelBounds = gamePanel.getBoundsInParent();
             double panelX = gameBoard.getLayoutX() + panelBounds.getMinX();
             double panelY = gameBoard.getLayoutY() + panelBounds.getMinY();
-            double newX = panelX + brick.getxPosition() * (brickPanel.getVgap() + BRICK_SIZE) - 2;
+            double newX = panelX + brick.getxPosition() * (brickPanel.getVgap() + BRICK_SIZE) - 2 + 2;
             brickPanel.setLayoutX(newX);
             
             // 计算目标Y位置（游戏板从第2行开始显示，前两行是隐藏区域）
             double targetY = panelY + (brick.getyPosition() - 2) * (brickPanel.getHgap() + BRICK_SIZE) - 8;
             brickPanel.setLayoutY(targetY);
             
+        bringBrickPanelsToFront();
+
             // 更新方块每个部分的颜色
             for (int i = 0; i < brick.getBrickData().length; i++) {
                 for (int j = 0; j < brick.getBrickData()[i].length; j++) {
-                    setRectangleData(brick.getBrickData()[i][j], rectangles[i][j]);
+                    setRectangleData(brick.getBrickData()[i][j], rectangles[i][j], true);
                 }
             }
             
@@ -527,9 +569,21 @@ public class GuiController implements Initializable {
      * @param rectangle 要设置的矩形对象
      */
     private void setRectangleData(int color, Rectangle rectangle) {
+        setRectangleData(color, rectangle, false);
+    }
+
+    private void setRectangleData(int color, Rectangle rectangle, boolean highlight) {
         rectangle.setFill(getFillColor(color)); // 设置填充颜色
         rectangle.setArcHeight(8); // 设置圆角高度
         rectangle.setArcWidth(8);  // 设置圆角宽度
+
+        if (highlight && color != 0) {
+            rectangle.setStroke(Color.rgb(255, 255, 255, 0.75));
+            rectangle.setStrokeWidth(1.4);
+        } else {
+            rectangle.setStroke(Color.TRANSPARENT);
+            rectangle.setStrokeWidth(0);
+        }
     }
 
     /**
@@ -544,7 +598,7 @@ public class GuiController implements Initializable {
             DownData downData = eventListener.onDownEvent(event);
             
             // 如果有行被消除，显示分数提示
-            if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
+            if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0 && groupNotification != null) {
                 NotificationPanel notificationPanel = new NotificationPanel("+" + downData.getClearRow().getScoreBonus());
                 groupNotification.getChildren().add(notificationPanel);
                 notificationPanel.showScore(groupNotification.getChildren());
@@ -585,13 +639,21 @@ public class GuiController implements Initializable {
         }
         
         if (isVsMode) {
+            // 调整布局：玩家1移到右侧，玩家2放在左侧
+            applyVsLayout();
             // 开启对战模式：结束当前游戏，开始新的对战
             if (timeLine != null) {
                 timeLine.stop();
             }
             gameOverPanel.setVisible(false);
-            if (gameOverGroup2 != null) {
-                gameOverGroup2.setVisible(false);
+            if (groupNotification2 != null) {
+                groupNotification2.setVisible(true);
+            }
+            if (gameOverPanel2 != null) {
+                gameOverPanel2.setVisible(false);
+            }
+            if (pausePanel2 != null) {
+                pausePanel2.setVisible(false);
             }
             isPause.setValue(Boolean.FALSE);
             isGameOver.setValue(Boolean.FALSE);
@@ -602,13 +664,18 @@ public class GuiController implements Initializable {
             // 开始新的对战游戏
             startNewGameDirectly(null);
         } else {
+            // 恢复单人模式布局
+            applySinglePlayerLayout();
             // 关闭对战模式：结束当前游戏，回到单人模式
             if (timeLine != null) {
                 timeLine.stop();
             }
             gameOverPanel.setVisible(false);
-            if (gameOverGroup2 != null) {
-                gameOverGroup2.setVisible(false);
+            if (groupNotification2 != null) {
+                groupNotification2.setVisible(false);
+            }
+            if (pausePanel2 != null) {
+                pausePanel2.setVisible(false);
             }
             isPause.setValue(Boolean.FALSE);
             isGameOver.setValue(Boolean.FALSE);
@@ -644,6 +711,12 @@ public class GuiController implements Initializable {
         if (scoreLabel2 != null) {
             scoreLabel2.setVisible(true);
         }
+        if (groupNotification2 != null) {
+            groupNotification2.setVisible(true);
+        }
+        if (pausePanel2 != null) {
+            pausePanel2.setVisible(false);
+        }
         
         // 创建玩家2的游戏背景显示矩阵
         displayMatrix2 = new Rectangle[boardMatrix.length][boardMatrix[0].length];
@@ -661,7 +734,7 @@ public class GuiController implements Initializable {
         for (int i = 0; i < brick.getBrickData().length; i++) {
             for (int j = 0; j < brick.getBrickData()[i].length; j++) {
                 Rectangle rectangle = new Rectangle(BRICK_SIZE, BRICK_SIZE);
-                rectangle.setFill(getFillColor(brick.getBrickData()[i][j]));
+                setRectangleData(brick.getBrickData()[i][j], rectangle, true);
                 rectangles2[i][j] = rectangle;
                 brickPanel2.add(rectangle, j, i);
             }
@@ -672,7 +745,7 @@ public class GuiController implements Initializable {
         javafx.geometry.Bounds panel2Bounds = gamePanel2.getBoundsInParent();
         double panel2X = gameBoard2.getLayoutX() + panel2Bounds.getMinX();
         double panel2Y = gameBoard2.getLayoutY() + panel2Bounds.getMinY();
-        brickPanel2.setLayoutX(panel2X + brick.getxPosition() * (brickPanel2.getVgap() + BRICK_SIZE) - 2);
+        brickPanel2.setLayoutX(panel2X + brick.getxPosition() * (brickPanel2.getVgap() + BRICK_SIZE) - 2 + 1);
         // 游戏板从第2行开始显示（前两行是隐藏区域），所以需要减去2行
         double targetY2 = panel2Y + (brick.getyPosition() - 2) * (brickPanel2.getHgap() + BRICK_SIZE) - 8;
         brickPanel2.setLayoutY(targetY2);
@@ -681,6 +754,9 @@ public class GuiController implements Initializable {
         if (nextBrickPanel2 != null) {
             initNextBrickPreview2(brick.getNextBrickData());
         }
+
+        // 确保通知组在布局完成后定位到玩家2棋盘内部
+        Platform.runLater(this::updateNotificationPosition);
     }
     
     /**
@@ -707,11 +783,14 @@ public class GuiController implements Initializable {
         if (scoreLabel2 != null) {
             scoreLabel2.setVisible(false);
         }
-        if (gameOverGroup2 != null) {
-            gameOverGroup2.setVisible(false);
+        if (groupNotification2 != null) {
+            groupNotification2.setVisible(false);
         }
         if (gameOverPanel2 != null) {
             gameOverPanel2.setVisible(false);
+        }
+        if (pausePanel2 != null) {
+            pausePanel2.setVisible(false);
         }
         
         displayMatrix2 = null;
@@ -728,16 +807,18 @@ public class GuiController implements Initializable {
             javafx.geometry.Bounds panel2Bounds = gamePanel2.getBoundsInParent();
             double panel2X = gameBoard2.getLayoutX() + panel2Bounds.getMinX();
             double panel2Y = gameBoard2.getLayoutY() + panel2Bounds.getMinY();
-            double newX2 = panel2X + brick.getxPosition() * (brickPanel2.getVgap() + BRICK_SIZE) - 2;
+            double newX2 = panel2X + brick.getxPosition() * (brickPanel2.getVgap() + BRICK_SIZE) - 2 + 1;
             brickPanel2.setLayoutX(newX2);
             
             // 计算目标Y位置（游戏板从第2行开始显示，前两行是隐藏区域）
             double targetY2 = panel2Y + (brick.getyPosition() - 2) * (brickPanel2.getHgap() + BRICK_SIZE) - 8;
             brickPanel2.setLayoutY(targetY2);
+
+            bringBrickPanelsToFront();
             
             for (int i = 0; i < brick.getBrickData().length; i++) {
                 for (int j = 0; j < brick.getBrickData()[i].length; j++) {
-                    setRectangleData(brick.getBrickData()[i][j], rectangles2[i][j]);
+                    setRectangleData(brick.getBrickData()[i][j], rectangles2[i][j], true);
                 }
             }
             
@@ -757,8 +838,11 @@ public class GuiController implements Initializable {
             if (downData != null) {
                 if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
                     NotificationPanel notificationPanel = new NotificationPanel("+" + downData.getClearRow().getScoreBonus());
-                    groupNotification.getChildren().add(notificationPanel);
-                    notificationPanel.showScore(groupNotification.getChildren());
+                    Group targetGroup = groupNotification2 != null ? groupNotification2 : groupNotification;
+                    if (targetGroup != null) {
+                        targetGroup.getChildren().add(notificationPanel);
+                        notificationPanel.showScore(targetGroup.getChildren());
+                    }
                 }
                 
                 refreshBrick2(downData.getViewData());
@@ -796,8 +880,8 @@ public class GuiController implements Initializable {
         if (timeLine != null) {
             timeLine.stop();
         }
-        if (gameOverGroup2 != null) {
-            gameOverGroup2.setVisible(true);
+        if (groupNotification2 != null) {
+            groupNotification2.setVisible(true);
         }
         if (gameOverPanel2 != null) {
             gameOverPanel2.setVisible(true);
@@ -919,28 +1003,7 @@ public class GuiController implements Initializable {
             wasPlaying[0] = true;
         }
         
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("New Game");
-        alert.setHeaderText("Start New Game?");
-        alert.setContentText("Are you sure you want to start a new game? Current progress will be lost.");
-        
-        // 设置按钮文本为英文
-        ButtonType okButton = new ButtonType("OK");
-        ButtonType cancelButton = new ButtonType("Cancel");
-        alert.getButtonTypes().setAll(okButton, cancelButton);
-        
-        // 显示对话框并等待用户响应
-        alert.showAndWait().ifPresent(response -> {
-            if (response == okButton) {
-                // 用户确认，开始新游戏
-                startNewGameDirectly(null);
-            } else {
-                // 用户取消，恢复游戏状态
-                if (wasPlaying[0] && isGameOver.getValue() == Boolean.FALSE) {
-                    timeLine.play();
-                }
-            }
-        });
+        startNewGameDirectly(null);
     }
 
     /**
@@ -964,8 +1027,8 @@ public class GuiController implements Initializable {
             timeLine.stop(); // 停止当前动画
         }
         gameOverPanel.setVisible(false); // 隐藏游戏结束面板
-        if (gameOverGroup2 != null) {
-            gameOverGroup2.setVisible(false); // 隐藏玩家2的游戏结束面板
+        if (groupNotification2 != null) {
+            groupNotification2.setVisible(false); // 隐藏玩家2的通知组
         }
         pausePanel.setVisible(false); // 隐藏暂停面板
         eventListener.createNewGame(); // 通知控制器创建新游戏
@@ -985,11 +1048,125 @@ public class GuiController implements Initializable {
             }
         }
         
-        gamePanel.requestFocus(); // 设置焦点
         // 根据当前难度重新创建时间线
         createTimeline();
         isPause.setValue(Boolean.FALSE); // 取消暂停状态
         isGameOver.setValue(Boolean.FALSE); // 取消游戏结束状态
+        refreshCurrentBricksPosition(); // 确保方块位置与最新布局一致
+        gamePanel.requestFocus(); // 设置焦点
+    }
+
+    /**
+     * 应用对战模式的布局：玩家1在右侧，玩家2在左侧
+     */
+    private void applyVsLayout() {
+        if (gameBoard != null) {
+            gameBoard.setLayoutX(VS_PLAYER1_BOARD_X);
+        }
+        if (player1Options != null) {
+            player1Options.setLayoutX(VS_PLAYER1_OPTIONS_X);
+        }
+        if (gameBoard2 != null) {
+            gameBoard2.setLayoutX(VS_PLAYER2_BOARD_X);
+        }
+        if (nextBrickVBox2 != null) {
+            nextBrickVBox2.setLayoutX(VS_PLAYER2_OPTIONS_X);
+            nextBrickVBox2.setVisible(true);
+        }
+        if (groupNotification2 != null) {
+            groupNotification2.setVisible(true);
+        }
+        updateNotificationPosition();
+    }
+
+    /**
+     * 恢复单人模式布局：玩家1在左侧，玩家2保持默认位置
+     */
+    private void applySinglePlayerLayout() {
+        if (gameBoard != null) {
+            gameBoard.setLayoutX(SINGLE_PLAYER_BOARD_X);
+        }
+        if (gameBoard2 != null) {
+            gameBoard2.setLayoutX(PLAYER2_BOARD_DEFAULT_X);
+        }
+        if (player1Options != null) {
+            player1Options.setLayoutX(SINGLE_PLAYER_OPTIONS_X);
+        }
+        if (nextBrickVBox2 != null) {
+            nextBrickVBox2.setLayoutX(PLAYER2_OPTIONS_DEFAULT_X);
+            nextBrickVBox2.setVisible(false);
+        }
+        if (groupNotification2 != null) {
+            groupNotification2.setVisible(false);
+        }
+        updateNotificationPosition();
+    }
+
+    /**
+     * 根据当前布局刷新方块的显示位置
+     */
+    private void refreshCurrentBricksPosition() {
+        if (gameController != null && gameController.getBoard() != null) {
+            refreshBrick(gameController.getBoard().getViewData());
+        }
+        if (isVsMode && gameController != null && gameController.getBoard2() != null) {
+            refreshBrick2(gameController.getBoard2().getViewData());
+        }
+    }
+
+    /**
+     * 根据玩家1棋盘位置更新得分提示/暂停提示的位置
+     */
+    private void updateNotificationPosition() {
+        positionNotificationGroup(groupNotification, gamePanel);
+        positionNotificationGroup(groupNotification2, gamePanel2);
+    }
+
+    private void positionNotificationGroup(Group notificationGroup, GridPane targetPanel) {
+        if (notificationGroup == null || targetPanel == null || targetPanel.getScene() == null) {
+            return;
+        }
+        Parent parent = notificationGroup.getParent();
+        if (!(parent instanceof Pane)) {
+            return;
+        }
+        Bounds panelBounds = targetPanel.localToScene(targetPanel.getBoundsInLocal());
+        Point2D topLeft = ((Pane) parent).sceneToLocal(panelBounds.getMinX(), panelBounds.getMinY());
+        notificationGroup.setLayoutX(topLeft.getX() + NOTIFICATION_OFFSET_X);
+        notificationGroup.setLayoutY(topLeft.getY() + NOTIFICATION_OFFSET_Y);
+        notificationGroup.toFront();
+    }
+
+    private void bringBrickPanelsToFront() {
+        if (brickPanel != null) {
+            brickPanel.toFront();
+        }
+        if (brickPanel2 != null) {
+            brickPanel2.toFront();
+        }
+        if (groupNotification != null) {
+            groupNotification.toFront();
+        }
+        if (groupNotification2 != null) {
+            groupNotification2.toFront();
+        }
+    }
+
+    private void configurePanelClip(GridPane panel, Rectangle clip) {
+        if (panel == null) {
+            return;
+        }
+        clip.setArcWidth(36);
+        clip.setArcHeight(36);
+        Bounds bounds = panel.getLayoutBounds();
+        clip.setWidth(bounds.getWidth());
+        clip.setHeight(bounds.getHeight());
+        panel.setClip(clip);
+
+        panel.layoutBoundsProperty().addListener((obs, oldBounds, newBounds) -> {
+            clip.setWidth(newBounds.getWidth());
+            clip.setHeight(newBounds.getHeight());
+        });
     }
 
     /**
@@ -1013,12 +1190,22 @@ public class GuiController implements Initializable {
                 // 暂停游戏
                 timeLine.pause();
                 isPause.setValue(Boolean.TRUE);
-                pausePanel.setVisible(true); // 显示暂停提示
+                if (pausePanel != null) {
+                    pausePanel.setVisible(true); // 显示暂停提示
+                }
+                if (isVsMode && pausePanel2 != null) {
+                    pausePanel2.setVisible(true);
+                }
             } else {
                 // 继续游戏
                 timeLine.play();
                 isPause.setValue(Boolean.FALSE);
-                pausePanel.setVisible(false); // 隐藏暂停提示
+                if (pausePanel != null) {
+                    pausePanel.setVisible(false); // 隐藏暂停提示
+                }
+                if (pausePanel2 != null) {
+                    pausePanel2.setVisible(false);
+                }
             }
             gamePanel.requestFocus();
         }
