@@ -9,28 +9,57 @@
 <?import javafx.geometry.Insets?>
 <?import java.net.URL?>
 <Pane fx:controller="com.comp2042.GuiController"
-      xmlns:fx="http://javafx.com/fxml">
+      xmlns:fx="http://javafx.com/fxml" prefWidth="800" prefHeight="610">
+    <!-- 玩家1的方块面板 -->
     <GridPane fx:id="brickPanel" vgap="1" hgap="1"/>
-    <BorderPane styleClass="gameBoard" fx:id="gameBoard">
+    
+    <!-- 玩家1的游戏板 -->
+    <BorderPane styleClass="gameBoard" fx:id="gameBoard" layoutX="40" layoutY="30">
         <center>
-            <GridPane fx:id="gamePanel" hgap="1" vgap="1" layoutY="30" layoutX="40"/>
+            <GridPane fx:id="gamePanel" hgap="1" vgap="1"/>
         </center>
         <top>
-            <VBox spacing="10" alignment="CENTER" layoutX="10" layoutY="10">
+            <VBox spacing="10" alignment="CENTER">
+                <Label text="PLAYER 1" styleClass="nextBrickLabel" style="-fx-font-size: 14px;"/>
                 <Label text="SCORE" styleClass="nextBrickLabel"/>
                 <Label fx:id="scoreLabel" text="0" styleClass="scoreClass"/>
             </VBox>
         </top>
     </BorderPane>
 
-    <Group fx:id="groupNotification" layoutX="14" layoutY="103">
+    <!-- 玩家2的方块面板（对战模式） -->
+    <GridPane fx:id="brickPanel2" vgap="1" hgap="1" visible="false"/>
+    
+    <!-- 玩家2的游戏板（对战模式） -->
+    <BorderPane styleClass="gameBoard" fx:id="gameBoard2" layoutX="420" layoutY="30" visible="false">
+        <center>
+            <GridPane fx:id="gamePanel2" hgap="1" vgap="1"/>
+        </center>
+        <top>
+            <VBox spacing="10" alignment="CENTER">
+                <Label text="PLAYER 2" styleClass="nextBrickLabel" style="-fx-font-size: 14px;"/>
+                <Label text="SCORE" styleClass="nextBrickLabel"/>
+                <Label fx:id="scoreLabel2" text="0" styleClass="scoreClass" visible="false"/>
+            </VBox>
+        </top>
+    </BorderPane>
+
+    <!-- 通知组（消除行分数提示） -->
+    <Group fx:id="groupNotification" layoutX="40" layoutY="150">
         <VBox alignment="CENTER">
             <GameOverPanel fx:id="gameOverPanel"/>
             <PausePanel fx:id="pausePanel"/>
         </VBox>
     </Group>
     
-    <!-- 下一个方块预览和按钮 -->
+    <!-- 玩家2的游戏结束面板（对战模式） -->
+    <Group fx:id="gameOverGroup2" layoutX="434" layoutY="103" visible="false">
+        <VBox alignment="CENTER">
+            <GameOverPanel fx:id="gameOverPanel2"/>
+        </VBox>
+    </Group>
+    
+    <!-- 玩家1的下一个方块预览和按钮 -->
     <VBox layoutX="275" layoutY="30" spacing="10" alignment="CENTER">
         <Label text="NEXT" styleClass="nextBrickLabel"/>
         <GridPane fx:id="nextBrickPanel" hgap="1" vgap="1" styleClass="nextBrick" alignment="CENTER">
@@ -44,9 +73,20 @@
                 <Button fx:id="easyButton" text="Easy" styleClass="difficultyButton" prefWidth="60"/>
                 <Button fx:id="hardButton" text="Hard" styleClass="difficultyButton" prefWidth="60"/>
             </HBox>
+            <ToggleButton fx:id="vsModeButton" text="VS Mode" styleClass="gameButton" prefWidth="120"/>
             <Button fx:id="newGameButton" text="New Game" styleClass="gameButton" prefWidth="120"/>
             <Button fx:id="pauseButton" text="Pause" styleClass="gameButton" prefWidth="120"/>
         </VBox>
+    </VBox>
+    
+    <!-- 玩家2的下一个方块预览（对战模式） -->
+    <VBox fx:id="nextBrickVBox2" layoutX="655" layoutY="30" spacing="10" alignment="CENTER" visible="false">
+        <Label text="NEXT" styleClass="nextBrickLabel"/>
+        <GridPane fx:id="nextBrickPanel2" hgap="1" vgap="1" styleClass="nextBrick" alignment="CENTER">
+            <padding>
+                <Insets top="5" right="5" bottom="5" left="5"/>
+            </padding>
+        </GridPane>
     </VBox>
     
     <stylesheets>

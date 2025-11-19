@@ -44,8 +44,8 @@ public class Main extends Application {
         // 设置窗口标题
         primaryStage.setTitle("TetrisJFX");
         
-        // 创建场景，设置窗口大小为300x510像素
-        Scene scene = new Scene(root, 400, 610);
+        // 创建场景，设置窗口大小（对战模式需要更大的窗口）
+        Scene scene = new Scene(root, 800, 810);
         
         // 将场景设置到主舞台
         primaryStage.setScene(scene);
