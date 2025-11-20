@@ -20,6 +20,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+
 import javafx.scene.effect.Reflection;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -118,6 +119,8 @@ public class GuiController implements Initializable {
 
     // 游戏自动下落的时间线动画
     private Timeline timeLine;
+    // 自动加分的时间线动画
+    private Timeline scoreTimeline;
 
     // 游戏暂停状态属性
     private final BooleanProperty isPause = new SimpleBooleanProperty();
@@ -270,16 +273,10 @@ public class GuiController implements Initializable {
         gameOverPanel.setVisible(false);
         pausePanel.setVisible(false);
 
-        // 设置反射效果（用于视觉增强）
-        final Reflection reflection = new Reflection();
-        reflection.setFraction(0.8);
-        reflection.setTopOpacity(0.9);
-        reflection.setTopOffset(-12);
-        
-        // 将反射效果应用到分数标签
-        if (scoreLabel != null) {
-            scoreLabel.setEffect(reflection);
-        }
+        // Reflection effect removed to use CSS DropShadow for neon glow
+        // if (scoreLabel != null) {
+        //     scoreLabel.setEffect(reflection);
+        // }
         
         // 手动绑定按钮事件（确保按钮可点击）
         if (newGameButton != null) {
@@ -424,7 +421,7 @@ public class GuiController implements Initializable {
         javafx.geometry.Bounds panelBounds = gamePanel.getBoundsInParent();
         double panelX = gameBoard.getLayoutX() + panelBounds.getMinX();
         double panelY = gameBoard.getLayoutY() + panelBounds.getMinY();
-        brickPanel.setLayoutX(panelX + brick.getxPosition() * (brickPanel.getVgap() + BRICK_SIZE) + 1);
+        brickPanel.setLayoutX(panelX + brick.getxPosition() * (brickPanel.getVgap() + BRICK_SIZE));
         // 游戏板从第2行开始显示（前两行是隐藏区域），所以需要减去2行
         double targetY = panelY + (brick.getyPosition() - 2) * (brickPanel.getHgap() + BRICK_SIZE) - 8;
         brickPanel.setLayoutY(targetY);
@@ -436,6 +433,7 @@ public class GuiController implements Initializable {
 
         // 创建自动下落的时间线动画（根据难度设置速度）
         createTimeline();
+        createScoreTimeline();
     }
     
     /**
@@ -472,6 +470,38 @@ public class GuiController implements Initializable {
     }
 
     /**
+     * 创建或更新自动加分的时间线动画
+     * 每秒增加1分
+     */
+    private void createScoreTimeline() {
+        // 如果已有时间线，先停止
+        if (scoreTimeline != null) {
+            scoreTimeline.stop();
+        }
+        
+        // 创建时间线，每秒触发一次
+        scoreTimeline = new Timeline(new KeyFrame(
+                Duration.seconds(1),
+                ae -> {
+                    // 玩家1加分
+                    if (gameController != null && gameController.getBoard() != null) {
+                        gameController.getBoard().getScore().add(1);
+                    }
+                    // 如果是对战模式，玩家2也加分
+                    if (isVsMode && gameController != null && gameController.getBoard2() != null) {
+                        gameController.getBoard2().getScore().add(1);
+                    }
+                }
+        ));
+        scoreTimeline.setCycleCount(Timeline.INDEFINITE); // 无限循环
+        
+        // 如果游戏未暂停且未结束，开始播放
+        if (isPause.getValue() == Boolean.FALSE && isGameOver.getValue() == Boolean.FALSE) {
+            scoreTimeline.play();
+        }
+    }
+
+    /**
      * 根据方块类型编号获取对应的颜色
      * 不同的数字代表不同的方块类型和颜色
      * 
@@ -482,31 +512,31 @@ public class GuiController implements Initializable {
         Paint returnPaint;
         switch (i) {
             case 0:
-                returnPaint = Color.TRANSPARENT; // 透明（空白）
+                returnPaint = Color.TRANSPARENT;
                 break;
             case 1:
-                returnPaint = Color.AQUA; // 青色（I型方块）
+                returnPaint = Color.rgb(0, 240, 255); // Neon Cyan (I)
                 break;
             case 2:
-                returnPaint = Color.BLUEVIOLET; // 蓝紫色（J型方块）
+                returnPaint = Color.rgb(180, 0, 255); // Neon Purple (J)
                 break;
             case 3:
-                returnPaint = Color.DARKGREEN; // 深绿色（L型方块）
+                returnPaint = Color.rgb(0, 255, 0); // Neon Green (L)
                 break;
             case 4:
-                returnPaint = Color.YELLOW; // 黄色（O型方块）
+                returnPaint = Color.rgb(255, 255, 0); // Neon Yellow (O)
                 break;
             case 5:
-                returnPaint = Color.RED; // 红色（S型方块）
+                returnPaint = Color.rgb(255, 0, 80); // Neon Red (S)
                 break;
             case 6:
-                returnPaint = Color.BEIGE; // 米色（T型方块）
+                returnPaint = Color.rgb(255, 0, 255); // Neon Magenta (T)
                 break;
             case 7:
-                returnPaint = Color.BURLYWOOD; // 浅棕色（Z型方块）
+                returnPaint = Color.rgb(255, 165, 0); // Neon Orange (Z)
                 break;
             default:
-                returnPaint = Color.WHITE; // 默认白色
+                returnPaint = Color.WHITE;
                 break;
         }
         return returnPaint;
@@ -525,11 +555,11 @@ public class GuiController implements Initializable {
             javafx.geometry.Bounds panelBounds = gamePanel.getBoundsInParent();
             double panelX = gameBoard.getLayoutX() + panelBounds.getMinX();
             double panelY = gameBoard.getLayoutY() + panelBounds.getMinY();
-            double newX = panelX + brick.getxPosition() * (brickPanel.getVgap() + BRICK_SIZE) - 2 + 2;
+            double newX = panelX + brick.getxPosition() * (brickPanel.getHgap() + BRICK_SIZE);
             brickPanel.setLayoutX(newX);
             
             // 计算目标Y位置（游戏板从第2行开始显示，前两行是隐藏区域）
-            double targetY = panelY + (brick.getyPosition() - 2) * (brickPanel.getHgap() + BRICK_SIZE) - 8;
+            double targetY = panelY + (brick.getyPosition() - 2) * (brickPanel.getVgap() + BRICK_SIZE) - 8;
             brickPanel.setLayoutY(targetY);
             
         bringBrickPanelsToFront();
@@ -574,13 +604,27 @@ public class GuiController implements Initializable {
 
     private void setRectangleData(int color, Rectangle rectangle, boolean highlight) {
         rectangle.setFill(getFillColor(color)); // 设置填充颜色
-        rectangle.setArcHeight(8); // 设置圆角高度
-        rectangle.setArcWidth(8);  // 设置圆角宽度
+        rectangle.setArcHeight(10); // slightly rounder
+        rectangle.setArcWidth(10);
 
-        if (highlight && color != 0) {
-            rectangle.setStroke(Color.rgb(255, 255, 255, 0.75));
-            rectangle.setStrokeWidth(1.4);
+        if (color != 0) {
+            if (highlight) {
+                // Falling block: No glow, but has border
+                rectangle.setEffect(null);
+                rectangle.setStroke(Color.WHITE);
+                rectangle.setStrokeWidth(2);
+                rectangle.setStrokeType(javafx.scene.shape.StrokeType.INSIDE);
+            } else {
+                // Merged block: No glow
+                rectangle.setEffect(null);
+                
+                // Subtle inner stroke
+                rectangle.setStroke(Color.rgb(255, 255, 255, 0.3));
+                rectangle.setStrokeWidth(1);
+                rectangle.setStrokeType(javafx.scene.shape.StrokeType.INSIDE);
+            }
         } else {
+            rectangle.setEffect(null);
             rectangle.setStroke(Color.TRANSPARENT);
             rectangle.setStrokeWidth(0);
         }
@@ -599,6 +643,7 @@ public class GuiController implements Initializable {
             
             // 如果有行被消除，显示分数提示
             if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0 && groupNotification != null) {
+                updateNotificationPosition(); // Ensure position is correct
                 NotificationPanel notificationPanel = new NotificationPanel("+" + downData.getClearRow().getScoreBonus());
                 groupNotification.getChildren().add(notificationPanel);
                 notificationPanel.showScore(groupNotification.getChildren());
@@ -645,6 +690,9 @@ public class GuiController implements Initializable {
             if (timeLine != null) {
                 timeLine.stop();
             }
+            if (scoreTimeline != null) {
+                scoreTimeline.stop();
+            }
             gameOverPanel.setVisible(false);
             if (groupNotification2 != null) {
                 groupNotification2.setVisible(true);
@@ -669,6 +717,9 @@ public class GuiController implements Initializable {
             // 关闭对战模式：结束当前游戏，回到单人模式
             if (timeLine != null) {
                 timeLine.stop();
+            }
+            if (scoreTimeline != null) {
+                scoreTimeline.stop();
             }
             gameOverPanel.setVisible(false);
             if (groupNotification2 != null) {
@@ -745,9 +796,9 @@ public class GuiController implements Initializable {
         javafx.geometry.Bounds panel2Bounds = gamePanel2.getBoundsInParent();
         double panel2X = gameBoard2.getLayoutX() + panel2Bounds.getMinX();
         double panel2Y = gameBoard2.getLayoutY() + panel2Bounds.getMinY();
-        brickPanel2.setLayoutX(panel2X + brick.getxPosition() * (brickPanel2.getVgap() + BRICK_SIZE) - 2 + 1);
+        brickPanel2.setLayoutX(panel2X + brick.getxPosition() * (brickPanel2.getHgap() + BRICK_SIZE) - 2 + 1);
         // 游戏板从第2行开始显示（前两行是隐藏区域），所以需要减去2行
-        double targetY2 = panel2Y + (brick.getyPosition() - 2) * (brickPanel2.getHgap() + BRICK_SIZE) - 8;
+        double targetY2 = panel2Y + (brick.getyPosition() - 2) * (brickPanel2.getVgap() + BRICK_SIZE) - 8;
         brickPanel2.setLayoutY(targetY2);
         
         // 初始化玩家2的下一个方块预览
@@ -807,11 +858,11 @@ public class GuiController implements Initializable {
             javafx.geometry.Bounds panel2Bounds = gamePanel2.getBoundsInParent();
             double panel2X = gameBoard2.getLayoutX() + panel2Bounds.getMinX();
             double panel2Y = gameBoard2.getLayoutY() + panel2Bounds.getMinY();
-            double newX2 = panel2X + brick.getxPosition() * (brickPanel2.getVgap() + BRICK_SIZE) - 2 + 1;
+            double newX2 = panel2X + brick.getxPosition() * (brickPanel2.getHgap() + BRICK_SIZE) - 2 + 1;
             brickPanel2.setLayoutX(newX2);
             
             // 计算目标Y位置（游戏板从第2行开始显示，前两行是隐藏区域）
-            double targetY2 = panel2Y + (brick.getyPosition() - 2) * (brickPanel2.getHgap() + BRICK_SIZE) - 8;
+            double targetY2 = panel2Y + (brick.getyPosition() - 2) * (brickPanel2.getVgap() + BRICK_SIZE) - 8;
             brickPanel2.setLayoutY(targetY2);
 
             bringBrickPanelsToFront();
@@ -837,11 +888,14 @@ public class GuiController implements Initializable {
             
             if (downData != null) {
                 if (downData.getClearRow() != null && downData.getClearRow().getLinesRemoved() > 0) {
+                    updateNotificationPosition(); // Ensure position is correct
                     NotificationPanel notificationPanel = new NotificationPanel("+" + downData.getClearRow().getScoreBonus());
                     Group targetGroup = groupNotification2 != null ? groupNotification2 : groupNotification;
                     if (targetGroup != null) {
+                        targetGroup.setVisible(true); // Ensure visible
                         targetGroup.getChildren().add(notificationPanel);
                         notificationPanel.showScore(targetGroup.getChildren());
+                        targetGroup.toFront(); // Ensure on top
                     }
                 }
                 
@@ -879,6 +933,9 @@ public class GuiController implements Initializable {
     public void gameOver2() {
         if (timeLine != null) {
             timeLine.stop();
+        }
+        if (scoreTimeline != null) {
+            scoreTimeline.stop();
         }
         if (groupNotification2 != null) {
             groupNotification2.setVisible(true);
@@ -985,6 +1042,9 @@ public class GuiController implements Initializable {
      */
     public void gameOver() {
         timeLine.stop(); // 停止自动下落
+        if (scoreTimeline != null) {
+            scoreTimeline.stop(); // 停止自动加分
+        }
         gameOverPanel.setVisible(true); // 显示游戏结束面板
         isGameOver.setValue(Boolean.TRUE); // 设置游戏结束状态
     }
@@ -1000,6 +1060,9 @@ public class GuiController implements Initializable {
         final boolean[] wasPlaying = {false};
         if (isGameOver.getValue() == Boolean.FALSE && !wasPaused) {
             timeLine.pause();
+            if (scoreTimeline != null) {
+                scoreTimeline.pause();
+            }
             wasPlaying[0] = true;
         }
         
@@ -1026,11 +1089,20 @@ public class GuiController implements Initializable {
         if (timeLine != null) {
             timeLine.stop(); // 停止当前动画
         }
+        if (scoreTimeline != null) {
+            scoreTimeline.stop();
+        }
         gameOverPanel.setVisible(false); // 隐藏游戏结束面板
+        if (gameOverPanel2 != null) {
+            gameOverPanel2.setVisible(false);
+        }
         if (groupNotification2 != null) {
             groupNotification2.setVisible(false); // 隐藏玩家2的通知组
         }
         pausePanel.setVisible(false); // 隐藏暂停面板
+        if (pausePanel2 != null) {
+            pausePanel2.setVisible(false);
+        }
         eventListener.createNewGame(); // 通知控制器创建新游戏
         
         // 获取新的游戏视图数据来初始化下一个方块预览
@@ -1048,10 +1120,14 @@ public class GuiController implements Initializable {
             }
         }
         
-        // 根据当前难度重新创建时间线
-        createTimeline();
         isPause.setValue(Boolean.FALSE); // 取消暂停状态
         isGameOver.setValue(Boolean.FALSE); // 取消游戏结束状态
+        
+        // 根据当前难度重新创建时间线
+        createTimeline();
+        createScoreTimeline();
+        
+        
         refreshCurrentBricksPosition(); // 确保方块位置与最新布局一致
         gamePanel.requestFocus(); // 设置焦点
     }
@@ -1189,6 +1265,9 @@ public class GuiController implements Initializable {
             if (isPause.getValue() == Boolean.FALSE) {
                 // 暂停游戏
                 timeLine.pause();
+                if (scoreTimeline != null) {
+                    scoreTimeline.pause();
+                }
                 isPause.setValue(Boolean.TRUE);
                 if (pausePanel != null) {
                     pausePanel.setVisible(true); // 显示暂停提示
@@ -1199,6 +1278,9 @@ public class GuiController implements Initializable {
             } else {
                 // 继续游戏
                 timeLine.play();
+                if (scoreTimeline != null) {
+                    scoreTimeline.play();
+                }
                 isPause.setValue(Boolean.FALSE);
                 if (pausePanel != null) {
                     pausePanel.setVisible(false); // 隐藏暂停提示

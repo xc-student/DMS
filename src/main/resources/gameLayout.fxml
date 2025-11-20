@@ -20,7 +20,7 @@
         </center>
         <top>
             <VBox spacing="10" alignment="CENTER">
-                <Label text="PLAYER 1" styleClass="nextBrickLabel" style="-fx-font-size: 14px;"/>
+                <Label text="PLAYER 1" styleClass="nextBrickLabel"/>
                 <Label text="SCORE" styleClass="nextBrickLabel"/>
                 <Label fx:id="scoreLabel" text="0" styleClass="scoreClass"/>
             </VBox>
@@ -37,28 +37,28 @@
         </center>
         <top>
             <VBox spacing="10" alignment="CENTER">
-                <Label text="PLAYER 2" styleClass="nextBrickLabel" style="-fx-font-size: 14px;"/>
+                <Label text="PLAYER 2" styleClass="nextBrickLabel"/>
                 <Label text="SCORE" styleClass="nextBrickLabel"/>
                 <Label fx:id="scoreLabel2" text="0" styleClass="scoreClass" visible="false"/>
             </VBox>
         </top>
     </BorderPane>
 
-    <!-- 玩家1通知组：暂停、GameOver、加分提示 -->
-    <Group fx:id="groupNotification" layoutX="0" layoutY="0">
-        <VBox alignment="CENTER" styleClass="notificationWrapper">
-            <GameOverPanel fx:id="gameOverPanel"/>
-            <PausePanel fx:id="pausePanel"/>
-        </VBox>
-    </Group>
+    <!-- 玩家1通知组：加分提示 -->
+    <Group fx:id="groupNotification" layoutX="0" layoutY="0"/>
     
-    <!-- 玩家2通知组：暂停、GameOver、加分提示 -->
-    <Group fx:id="groupNotification2" layoutX="0" layoutY="0" visible="false">
-        <VBox alignment="CENTER" styleClass="notificationWrapper">
-            <GameOverPanel fx:id="gameOverPanel2"/>
-            <PausePanel fx:id="pausePanel2"/>
-        </VBox>
-    </Group>
+    <!-- 玩家2通知组：加分提示 -->
+    <Group fx:id="groupNotification2" layoutX="0" layoutY="0" visible="false"/>
+
+    <!-- 全局状态提示：暂停、GameOver (顶部居中) -->
+    <StackPane layoutX="50" layoutY="50" prefWidth="2000" alignment="CENTER" mouseTransparent="true">
+        <children>
+             <GameOverPanel fx:id="gameOverPanel"/>
+             <PausePanel fx:id="pausePanel"/>
+             <GameOverPanel fx:id="gameOverPanel2"/>
+             <PausePanel fx:id="pausePanel2"/>
+        </children>
+    </StackPane>
     
     <!-- 玩家1的下一个方块预览和按钮 -->
     <VBox fx:id="player1Options" layoutX="1200" layoutY="300" spacing="10" alignment="CENTER" styleClass="sidePanel">
@@ -69,7 +69,7 @@
             </padding>
         </GridPane>
         <VBox spacing="8" alignment="CENTER">
-            <Label text="DIFFICULTY" styleClass="nextBrickLabel" style="-fx-font-size: 12px;"/>
+            <Label text="DIFFICULTY" styleClass="nextBrickLabel"/>
             <HBox spacing="5" alignment="CENTER">
                 <Button fx:id="easyButton" text="Easy" styleClass="difficultyButton" prefWidth="60"/>
                 <Button fx:id="hardButton" text="Hard" styleClass="difficultyButton" prefWidth="60"/>

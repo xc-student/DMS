@@ -1,174 +1,170 @@
 .root {
-    -fx-background-color: linear-gradient(to bottom, #0f1726 0%, #1a2338 55%, #10182a 100%);
-    -fx-background-image: url("background_image.png");
+    /* -fx-background-color: linear-gradient(to bottom, #050510 0%, #101025 100%); */
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #0A0A28, #000000);
+    /* -fx-background-image: url("background_image.png"); */
     -fx-background-repeat: repeat;
 }
 
 .mainPane {
     -fx-padding: 50 70 50 70;
-    -fx-background-color: transparent;
+    /* -fx-background-color: transparent; */
 }
 
 .nextBrick {
     -fx-border-width: 2px;
-    -fx-border-color: rgba(255, 255, 255, 0.85);
-    -fx-border-radius: 24px;
-    -fx-background-radius: 24px;
-    -fx-background-color: rgba(15, 24, 40, 0.55);
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.45), 14, 0.2, 0, 2);
+    -fx-border-color: rgba(0, 240, 255, 0.5);
+    -fx-border-radius: 15px;
+    -fx-background-radius: 15px;
+    -fx-background-color: rgba(20, 20, 40, 0.8);
+    -fx-effect: dropshadow(gaussian, rgba(0, 240, 255, 0.3), 15, 0.2, 0, 0);
 }
 
 .gameBoard {
-    /* -fx-border-color: rgba(114, 222, 255, 0.9);
-    -fx-border-width: 9px;
-    -fx-border-radius: 28px; */
-    -fx-background-color: rgba(9, 22, 38, 0.8);
-    -fx-effect: dropshadow(gaussian, rgba(0, 170, 255, 0.35), 34, 0.45, 0, 0);
+    -fx-background-color: rgba(10, 10, 20, 0.9);
+    -fx-border-color: rgba(180, 0, 255, 0.6);
+    -fx-border-width: 2px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-effect: dropshadow(gaussian, rgba(180, 0, 255, 0.4), 20, 0.3, 0, 0);
 }
 
 .nextBrickLabel {
     -fx-font-family: "Let's go Digital";
     -fx-padding: 16px 0 4px 0;
-    -fx-font-size: 18px;
-    -fx-text-fill: #f9ffba;
-    -fx-effect: dropshadow(gaussian, rgba(255, 255, 150, 0.55), 10, 0.2, 0, 0);
+    -fx-font-size: 22px;
+    -fx-text-fill: #00f0ff;
+    -fx-effect: dropshadow(gaussian, rgba(0, 240, 255, 0.8), 10, 0.5, 0, 0);
 }
 
 .ipad-dark-grey {
-    -fx-background-color: linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
-    linear-gradient(#020b02, #3a3a3a),
-    linear-gradient(#9d9e9d 0%, #6b6a6b 20%, #343534 80%, #242424 100%),
-    linear-gradient(#8a8a8a 0%, #6b6a6b 20%, #343534 80%, #262626 100%),
-    linear-gradient(#777777 0%, #606060 50%, #505250 51%, #2a2b2a 100%);
-    -fx-background-insets: 0, 1, 4, 5, 6;
-    -fx-background-radius: 9, 8, 5, 4, 3;
-    -fx-padding: 8;
-    /*-fx-font-family: "Helvetica";*/
+    -fx-background-color: #202030;
+    -fx-background-radius: 10;
+    -fx-padding: 10;
     -fx-font-family: "Let's go Digital";
     -fx-font-size: 22px;
     -fx-font-weight: bold;
     -fx-text-fill: white;
-    -fx-effect: dropshadow(three-pass-box, rgba(255, 255, 255, 0.2), 1, 0.0, 0, 1);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 5, 0, 0, 2);
 }
 
 .rectangleStyle {
-    -fx-fill: linear-gradient(from 41px 34px to 50px 50px, reflect, #ff7f50 30%, #faebd7 47%);
+    -fx-fill: linear-gradient(from 0% 0% to 100% 100%, #ff0050, #ff00aa);
 }
 
 .vbox {
-    -fx-spacing: 12;
+    -fx-spacing: 15;
 }
 
 .helpInfo {
-    -fx-fill: white;
+    -fx-fill: #aaaaaa;
     -fx-alignment: center-left;
     -fx-text-alignment: left;
-    -fx-font-size: 10px;
+    -fx-font-size: 12px;
 }
 
 .bonusStyle {
     -fx-font-size: 40px;
     -fx-font-weight: bold;
+    -fx-fill: #00ff00;
+    -fx-text-fill: #00ff00;
+    -fx-effect: dropshadow(gaussian, #00ff00, 10, 0.5, 0, 0);
 }
 
 .gameOverStyle {
     -fx-font-family: "Let's go Digital";
-    -fx-font-size: 48;
-    -fx-background-color: red;
+    -fx-font-size: 54;
+    -fx-text-fill: #ff0050;
+    -fx-effect: dropshadow(gaussian, rgba(255, 0, 80, 0.8), 20, 0.5, 0, 0);
 }
 
 .pauseStyle {
     -fx-font-family: "Let's go Digital";
-    -fx-font-size: 48;
-    -fx-text-fill: yellow;
-    -fx-effect: dropshadow(three-pass-box, rgba(255, 255, 0, 0.8), 10, 0.0, 0, 2);
+    -fx-font-size: 54;
+    -fx-text-fill: #ffff00;
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 0, 0.8), 20, 0.5, 0, 0);
 }
 
-.scoreClass{
+.scoreClass {
     -fx-font-family: "Let's go Digital";
-    -fx-font-size: 38;
-    -fx-fill: yellow;
-    -fx-text-fill: yellow;
-    -fx-effect: dropshadow(gaussian, rgba(255, 255, 0, 0.85), 18, 0.35, 0, 0);
+    -fx-font-size: 48;
+    -fx-fill: #00ff00;
+    -fx-text-fill: #00ff00;
+    -fx-effect: dropshadow(gaussian, rgba(0, 255, 0, 0.8), 20, 0.5, 0, 0);
 }
 
 .gameButton {
-    -fx-background-color: linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
-    linear-gradient(#020b02, #3a3a3a),
-    linear-gradient(#9d9e9d 0%, #6b6a6b 20%, #343534 80%, #242424 100%),
-    linear-gradient(#8a8a8a 0%, #6b6a6b 20%, #343534 80%, #262626 100%),
-    linear-gradient(#777777 0%, #606060 50%, #505250 51%, #2a2b2a 100%);
-    -fx-background-insets: 0, 1, 4, 5, 6;
-    -fx-background-radius: 9, 8, 5, 4, 3;
-    -fx-padding: 8 15 8 15;
-    -fx-font-family: "Let's go Digital";
+    -fx-background-color: rgba(0, 240, 255, 0.1);
+    -fx-border-color: #00f0ff;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-padding: 10 20 10 20;
+    -fx-font-family: "Arial";
     -fx-font-size: 14px;
     -fx-font-weight: bold;
-    -fx-text-fill: white;
-    -fx-effect: dropshadow(three-pass-box, rgba(255, 255, 255, 0.2), 1, 0.0, 0, 1);
+    -fx-text-fill: #00f0ff;
     -fx-cursor: hand;
+    -fx-transition: all 0.3s;
 }
 
 .gameButton:hover {
-    -fx-background-color: linear-gradient(#888888 0%, #333333 25%, #474747 75%, #858585 100%),
-    linear-gradient(#030c03, #4a4a4a),
-    linear-gradient(#adadae 0%, #7b7a7b 20%, #444544 80%, #343434 100%),
-    linear-gradient(#9a9a9a 0%, #7b7a7b 20%, #444544 80%, #363636 100%),
-    linear-gradient(#878787 0%, #707070 50%, #606260 51%, #3a3b3a 100%);
+    -fx-background-color: rgba(0, 240, 255, 0.3);
+    -fx-effect: dropshadow(gaussian, #00f0ff, 10, 0.5, 0, 0);
+    -fx-text-fill: white;
 }
 
 .gameButton:pressed {
-    -fx-background-color: linear-gradient(#585858 0%, #131713 25%, #272827 75%, #656565 100%),
-    linear-gradient(#010a01, #2a2a2a),
-    linear-gradient(#8d8d8e 0%, #5b5a5b 20%, #242524 80%, #141414 100%),
-    linear-gradient(#7a7a7a 0%, #5b5a5b 20%, #242524 80%, #161616 100%),
-    linear-gradient(#676767 0%, #505050 50%, #404240 51%, #1a1b1a 100%);
+    -fx-background-color: rgba(0, 240, 255, 0.5);
+    -fx-effect: dropshadow(gaussian, #00f0ff, 5, 0.8, 0, 0);
+}
+
+.gameButton:focused {
+    -fx-background-color: rgba(0, 240, 255, 0.1);
+    -fx-effect: none;
+}
+
+.gameButton:selected {
+    -fx-background-color: rgba(0, 240, 255, 0.3);
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, #00f0ff, 5, 0.5, 0, 0);
 }
 
 .difficultyButton {
-    -fx-background-color: linear-gradient(#686868 0%, #232723 25%, #373837 75%, #757575 100%),
-    linear-gradient(#020b02, #3a3a3a),
-    linear-gradient(#9d9e9d 0%, #6b6a6b 20%, #343534 80%, #242424 100%),
-    linear-gradient(#8a8a8a 0%, #6b6a6b 20%, #343534 80%, #262626 100%),
-    linear-gradient(#777777 0%, #606060 50%, #505250 51%, #2a2b2a 100%);
-    -fx-background-insets: 0, 1, 4, 5, 6;
-    -fx-background-radius: 9, 8, 5, 4, 3;
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-border-color: #aaaaaa;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
     -fx-padding: 5 10 5 10;
-    -fx-font-family: "Let's go Digital";
+    -fx-font-family: "Arial";
     -fx-font-size: 12px;
     -fx-font-weight: bold;
-    -fx-text-fill: white;
-    -fx-effect: dropshadow(three-pass-box, rgba(255, 255, 255, 0.2), 1, 0.0, 0, 1);
+    -fx-text-fill: #aaaaaa;
     -fx-cursor: hand;
 }
 
 .difficultyButton:hover {
-    -fx-background-color: linear-gradient(#888888 0%, #333333 25%, #474747 75%, #858585 100%),
-    linear-gradient(#030c03, #4a4a4a),
-    linear-gradient(#adadae 0%, #7b7a7b 20%, #444544 80%, #343434 100%),
-    linear-gradient(#9a9a9a 0%, #7b7a7b 20%, #444544 80%, #363636 100%),
-    linear-gradient(#878787 0%, #707070 50%, #606260 51%, #3a3b3a 100%);
+    -fx-border-color: white;
+    -fx-text-fill: white;
+    -fx-background-color: rgba(255, 255, 255, 0.2);
 }
 
 .difficultyButtonSelected {
-    -fx-background-color: linear-gradient(#8888ff 0%, #3333ff 25%, #4747ff 75%, #8585ff 100%),
-    linear-gradient(#0303ff, #4a4aff),
-    linear-gradient(#adadff 0%, #7b7bff 20%, #4444ff 80%, #3434ff 100%),
-    linear-gradient(#9a9aff 0%, #7b7bff 20%, #4444ff 80%, #3636ff 100%),
-    linear-gradient(#8787ff 0%, #7070ff 50%, #6062ff 51%, #3a3bff 100%);
-    -fx-text-fill: yellow;
-    -fx-effect: dropshadow(three-pass-box, rgba(255, 255, 0, 0.8), 5, 0.0, 0, 1);
+    -fx-background-color: rgba(255, 0, 80, 0.2);
+    -fx-border-color: #ff0050;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(255, 0, 80, 0.6), 5, 0.2, 0, 0);
 }
 
 .sidePanel {
-    -fx-background-color: rgba(18, 30, 48, 0.85);
-    -fx-background-radius: 32px;
-    -fx-border-color: rgba(155, 228, 255, 0.45);
-    -fx-border-width: 2px;
-    -fx-border-radius: 32px;
-    -fx-padding: 26 32 36 32;
-    -fx-spacing: 12;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.55), 24, 0.28, 0, 7);
+    -fx-background-color: rgba(20, 20, 40, 0.8);
+    -fx-background-radius: 20px;
+    -fx-border-color: rgba(0, 240, 255, 0.3);
+    -fx-border-width: 1px;
+    -fx-border-radius: 20px;
+    -fx-padding: 20;
+    -fx-spacing: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.5), 20, 0.2, 0, 5);
 }
 
 .sidePanel .gameButton {
@@ -176,7 +172,11 @@
 }
 
 .notificationWrapper {
-    -fx-background-color: transparent;
-    -fx-padding: 0;
-    -fx-spacing: 8;
+    -fx-background-color: rgba(0, 0, 0, 0.7);
+    -fx-background-radius: 10;
+    -fx-padding: 20;
+    -fx-spacing: 10;
+    -fx-border-color: white;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
 }
