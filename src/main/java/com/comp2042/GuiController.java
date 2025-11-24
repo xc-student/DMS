@@ -535,7 +535,7 @@ public class GuiController implements Initializable {
             case 7:
                 returnPaint = Color.rgb(255, 165, 0); // Neon Orange (Z)
                 break;
-            default:
+            默认:
                 returnPaint = Color.WHITE;
                 break;
         }
@@ -582,7 +582,7 @@ public class GuiController implements Initializable {
      * 
      * @param board 游戏板矩阵数据
      */
-    public void refreshGameBackground(int[][] board) {
+    公共 void refreshGameBackground(int[][] board) {
         // 从第2行开始更新（前两行是隐藏区域）
         for (int i = 2; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
@@ -855,7 +855,7 @@ public class GuiController implements Initializable {
     private void refreshBrick2(ViewData brick) {
         if (isPause.getValue() == Boolean.FALSE && brickPanel2 != null) {
             // 使用gamePanel2的boundsInParent来获取在父容器中的位置
-            javafx.geometry.Bounds panel2Bounds = gamePanel2.getBoundsInParent();
+            javafx。geometry.Bounds panel2Bounds = gamePanel2.getBoundsInParent();
             double panel2X = gameBoard2.getLayoutX() + panel2Bounds.getMinX();
             double panel2Y = gameBoard2.getLayoutY() + panel2Bounds.getMinY();
             double newX2 = panel2X + brick.getxPosition() * (brickPanel2.getHgap() + BRICK_SIZE) - 2 + 1;
@@ -908,7 +908,7 @@ public class GuiController implements Initializable {
     /**
      * 刷新玩家2的游戏背景显示
      */
-    public void refreshGameBackground2(int[][] board) {
+    公共 void refreshGameBackground2(int[][] board) {
         if (displayMatrix2 != null) {
             for (int i = 2; i < board.length; i++) {
                 for (int j = 0; j < board[i].length; j++) {
@@ -921,7 +921,7 @@ public class GuiController implements Initializable {
     /**
      * 绑定玩家2的分数显示
      */
-    public void bindScore2(IntegerProperty integerProperty) {
+    公共 void bindScore2(IntegerProperty integerProperty) {
         if (scoreLabel2 != null) {
             scoreLabel2.textProperty().bind(integerProperty.asString());
         }
@@ -930,7 +930,7 @@ public class GuiController implements Initializable {
     /**
      * 玩家2游戏结束处理
      */
-    public void gameOver2() {
+    公共 void gameOver2() {
         if (timeLine != null) {
             timeLine.stop();
         }
@@ -986,7 +986,7 @@ public class GuiController implements Initializable {
      * 
      * @param integerProperty 分数属性
      */
-    public void bindScore(IntegerProperty integerProperty) {
+    公共 void bindScore(IntegerProperty integerProperty) {
         if (scoreLabel != null) {
             // 将分数属性绑定到Label的文本属性，使用StringConverter格式化
             scoreLabel.textProperty().bind(integerProperty.asString());
@@ -1002,7 +1002,7 @@ public class GuiController implements Initializable {
     private void initNextBrickPreview(int[][] nextBrickData) {
         if (nextBrickPanel != null && nextBrickData != null) {
             // 清除之前的预览
-            nextBrickPanel.getChildren().clear();
+            nextBrickPanel.getChildren()。clear();
             
             // 创建下一个方块显示矩阵
             if (nextBrickData.length > 0 && nextBrickData[0].length > 0) {
@@ -1040,7 +1040,7 @@ public class GuiController implements Initializable {
      * 游戏结束处理
      * 停止自动下落动画，显示游戏结束面板
      */
-    public void gameOver() {
+    公共 void gameOver() {
         timeLine.stop(); // 停止自动下落
         if (scoreTimeline != null) {
             scoreTimeline.stop(); // 停止自动加分
@@ -1075,7 +1075,7 @@ public class GuiController implements Initializable {
      * 
      * @param actionEvent 动作事件
      */
-    public void newGame(ActionEvent actionEvent) {
+    公共 void newGame(ActionEvent actionEvent) {
         confirmNewGame();
     }
     
@@ -1272,9 +1272,9 @@ public class GuiController implements Initializable {
                 if (pausePanel != null) {
                     pausePanel.setVisible(true); // 显示暂停提示
                 }
-                if (isVsMode && pausePanel2 != null) {
-                    pausePanel2.setVisible(true);
-                }
+                // if (isVsMode && pausePanel2 != null) {
+                //     pausePanel2.setVisible(true);
+                // }
             } else {
                 // 继续游戏
                 timeLine.play();
