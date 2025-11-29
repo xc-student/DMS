@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="JavadocGenerationManager">
-    <option name="OUTPUT_DIRECTORY" value="$PROJECT_DIR$/../aaa/bbb/ccc/ddd" />
+    <option name="OUTPUT_DIRECTORY" value="$USER_HOME$/Desktop/新建文件夹" />
     <option name="OPTION_SCOPE" value="public" />
     <option name="OTHER_OPTIONS" value="-encoding UTF-8 -charset UTF-8 -locale en-us" />
     <option name="LOCALE" value="en-us" />
