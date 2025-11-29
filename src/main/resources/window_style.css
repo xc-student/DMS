@@ -74,14 +74,14 @@
     -fx-font-family: "Let's go Digital";
     -fx-font-size: 54;
     -fx-text-fill: #ff0050;
-    -fx-effect: dropshadow(gaussian, rgba(255, 0, 80, 0.8), 20, 0.5, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(255, 0, 80, 0.5), 20, 0.5, 0, 0);
 }
 
 .pauseStyle {
     -fx-font-family: "Let's go Digital";
     -fx-font-size: 54;
     -fx-text-fill: #ffff00;
-    -fx-effect: dropshadow(gaussian, rgba(255, 255, 0, 0.8), 20, 0.5, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 0, 0.5), 20, 0.5, 0, 0);
 }
 
 .scoreClass {

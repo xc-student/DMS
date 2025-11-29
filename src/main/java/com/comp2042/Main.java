@@ -12,20 +12,20 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 /**
- * Tetris游戏的主入口类
- * 继承自JavaFX的Application类，负责启动游戏界面
+ * Main entry point for the Tetris game application.
+ * Extends JavaFX Application class and is responsible for launching the game interface.
  * 
- * @author 游戏开发者
+ * @author XiangCan
  * @version 1.0
  */
 public class Main extends Application {
 
     /**
-     * JavaFX应用程序的启动方法
-     * 负责加载FXML界面文件，创建场景，显示窗口，并初始化游戏控制器
+     * Starts the JavaFX application.
+     * Loads the FXML layout file, creates the scene, displays the window, and initializes the game controller.
      * 
-     * @param primaryStage 主舞台窗口
-     * @throws Exception 如果加载FXML文件或初始化过程中出现异常
+     * @param primaryStage the primary stage window for this application
+     * @throws Exception if an error occurs during FXML loading or initialization
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -64,12 +64,12 @@ public class Main extends Application {
     }
 
     /**
-     * 程序主入口方法
-     * 启动JavaFX应用程序
+     * Main entry point of the program.
+     * Launches the JavaFX application.
      * 
-     * @param args 命令行参数
+     * @param args command line arguments
      */
     public static void main(String[] args) {
-        launch(args); // 启动JavaFX应用程序
+        launch(args); // Launch the JavaFX application
     }
 }

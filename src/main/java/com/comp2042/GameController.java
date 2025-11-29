@@ -1,13 +1,24 @@
 package com.comp2042;
 
+/**
+ * Main game controller that manages game logic and coordinates between the model and view.
+ * Implements InputEventListener to handle user input events for both single-player and versus modes.
+ * This class manages up to two game boards for versus mode gameplay.
+ */
 public class GameController implements InputEventListener {
 
     private Board board = new SimpleBoard(25, 10);
-    private Board board2 = null; // 玩家2的游戏板（对战模式）
+    private Board board2 = null; // Player 2's game board (versus mode)
 
     private final GuiController viewGuiController;
-    private boolean isVsMode = false; // 是否处于对战模式
+    private boolean isVsMode = false; // Whether in versus mode
 
+    /**
+     * Constructs a new GameController and initializes the game.
+     * Sets up the first game board, binds it to the GUI controller, and initializes the game view.
+     * 
+     * @param c the GUI controller that manages the visual representation of the game
+     */
     public GameController(GuiController c) {
         viewGuiController = c;
         board.createNewBrick();
@@ -17,8 +28,10 @@ public class GameController implements InputEventListener {
     }
 
     /**
-     * 设置对战模式
-     * @param vsMode true = 对战模式，false = 单人模式
+     * Sets the versus mode for two-player gameplay.
+     * When enabled, creates and initializes a second game board for player 2.
+     * 
+     * @param vsMode true to enable versus mode, false for single-player mode
      */
     public void setVsMode(boolean vsMode) {
         isVsMode = vsMode;
@@ -38,7 +51,10 @@ public class GameController implements InputEventListener {
     }
 
     /**
-     * 玩家1的下落事件（方向键控制）
+     * Handles the down movement event for player 1 (controlled by arrow keys).
+     * 
+     * @param event the movement event triggered by user input
+     * @return DownData containing information about cleared rows and updated view data
      */
     @Override
     public DownData onDownEvent(MoveEvent event) {
@@ -46,7 +62,11 @@ public class GameController implements InputEventListener {
     }
 
     /**
-     * 玩家2的下落事件（WASD控制）
+     * Handles the down movement event for player 2 (controlled by WASD keys).
+     * Only active in versus mode.
+     * 
+     * @param event the movement event triggered by user input
+     * @return DownData containing information about cleared rows and updated view data, or null if not in versus mode
      */
     public DownData onDownEvent2(MoveEvent event) {
         if (isVsMode && board2 != null) {
@@ -56,7 +76,13 @@ public class GameController implements InputEventListener {
     }
 
     /**
-     * 处理下落事件的通用方法
+     * Common method to handle down movement events for any player.
+     * Manages brick movement, merging, row clearing, scoring, and game over detection.
+     * 
+     * @param targetBoard the game board to operate on
+     * @param event the movement event
+     * @param isPlayer2 true if this is for player 2, false for player 1
+     * @return DownData containing cleared row information and updated view data
      */
     private DownData handleDownEvent(Board targetBoard, MoveEvent event, boolean isPlayer2) {
         boolean canMove = targetBoard.moveBrickDown();
@@ -96,7 +122,11 @@ public class GameController implements InputEventListener {
     }
 
     /**
-     * 玩家2的左移事件
+     * Handles the left movement event for player 2.
+     * Only active in versus mode.
+     * 
+     * @param event the movement event triggered by user input
+     * @return ViewData containing updated brick position and shape, or null if not in versus mode
      */
     public ViewData onLeftEvent2(MoveEvent event) {
         if (isVsMode && board2 != null) {
@@ -113,7 +143,11 @@ public class GameController implements InputEventListener {
     }
 
     /**
-     * 玩家2的右移事件
+     * Handles the right movement event for player 2.
+     * Only active in versus mode.
+     * 
+     * @param event the movement event triggered by user input
+     * @return ViewData containing updated brick position and shape, or null if not in versus mode
      */
     public ViewData onRightEvent2(MoveEvent event) {
         if (isVsMode && board2 != null) {
@@ -130,7 +164,11 @@ public class GameController implements InputEventListener {
     }
 
     /**
-     * 玩家2的旋转事件
+     * Handles the rotation event for player 2.
+     * Only active in versus mode.
+     * 
+     * @param event the movement event triggered by user input
+     * @return ViewData containing updated brick position and shape, or null if not in versus mode
      */
     public ViewData onRotateEvent2(MoveEvent event) {
         if (isVsMode && board2 != null) {
@@ -153,21 +191,27 @@ public class GameController implements InputEventListener {
     }
 
     /**
-     * 获取玩家1的游戏板
+     * Gets the game board for player 1.
+     * 
+     * @return the Board instance for player 1
      */
     public Board getBoard() {
         return board;
     }
 
     /**
-     * 获取玩家2的游戏板
+     * Gets the game board for player 2.
+     * 
+     * @return the Board instance for player 2, or null if not in versus mode
      */
     public Board getBoard2() {
         return board2;
     }
 
     /**
-     * 是否处于对战模式
+     * Checks if the game is currently in versus mode.
+     * 
+     * @return true if in versus mode, false otherwise
      */
     public boolean isVsMode() {
         return isVsMode;

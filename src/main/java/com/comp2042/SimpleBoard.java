@@ -6,6 +6,10 @@ import com.comp2042.logic.bricks.Brick;
 import com.comp2042.logic.bricks.BrickGenerator;
 import com.comp2042.logic.bricks.RandomBrickGenerator;
 
+/**
+ * Concrete implementation of the Board interface for a Tetris game.
+ * Manages the game board state, brick movement, collision detection, and scoring.
+ */
 public class SimpleBoard implements Board {
 
     private final int width;
@@ -16,6 +20,13 @@ public class SimpleBoard implements Board {
     private Point currentOffset;
     private final Score score;
 
+    /**
+     * Constructs a new SimpleBoard with the specified dimensions.
+     * Initializes the game matrix, brick generator, rotator, and score tracker.
+     * 
+     * @param width the height of the board (number of rows)
+     * @param height the width of the board (number of columns)
+     */
     public SimpleBoard(int width, int height) {
         this.width = width;
         this.height = height;

@@ -72,6 +72,40 @@
                     </options>
                 </configuration>
             </plugin>
+
+            <!-- Javadoc Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.6.3</version>
+                <configuration>
+                    <outputDirectory>${project.basedir}/Javadoc</outputDirectory>
+                    <reportOutputDirectory>${project.basedir}/Javadoc</reportOutputDirectory>
+                    <destDir>.</destDir>
+                    <show>public</show>
+                    <nohelp>false</nohelp>
+                    <charset>UTF-8</charset>
+                    <encoding>UTF-8</encoding>
+                    <docencoding>UTF-8</docencoding>
+                    <additionalOptions>
+                        <additionalOption>-html5</additionalOption>
+                        <additionalOption>-locale</additionalOption>
+                        <additionalOption>en_US</additionalOption>
+                    </additionalOptions>
+                </configuration>
+            </plugin>
+
+            <!-- Maven Surefire Plugin for running tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M9</version>
+                <configuration>
+                    <includes>
+                        <include>**/*Test.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>

@@ -14,8 +14,18 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
+/**
+ * UI panel for displaying animated score notifications.
+ * Shows bonus points or score updates with fade and slide animations.
+ */
 public class NotificationPanel extends BorderPane {
 
+    /**
+     * Constructs a new NotificationPanel with the specified text.
+     * Applies the "bonusStyle" CSS class for styling.
+     * 
+     * @param text the notification text to display (e.g., "+100 points")
+     */
     public NotificationPanel(String text) {
         setMinHeight(200);
         setMinWidth(220);
@@ -29,6 +39,12 @@ public class NotificationPanel extends BorderPane {
 
     }
 
+    /**
+     * Displays the notification with an animated fade and upward slide effect.
+     * Automatically removes the panel from the provided list when the animation completes.
+     * 
+     * @param list the observable list of nodes containing this panel
+     */
     public void showScore(ObservableList<Node> list) {
         FadeTransition ft = new FadeTransition(Duration.millis(2000), this);
         TranslateTransition tt = new TranslateTransition(Duration.millis(2500), this);

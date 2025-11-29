@@ -17,11 +17,7 @@ import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Parent;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
-
-import javafx.scene.effect.Reflection;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
@@ -34,17 +30,17 @@ import javafx.scene.text.Font;
 import javafx.util.Duration;
 
 /**
- * GUI控制器类
- * 负责处理用户界面显示和用户输入事件
- * 实现Initializable接口，在FXML加载完成后自动初始化
+ * GUI controller class
+ * Handles user interface display and user input events
+ * Implements Initializable interface, automatically initializes after FXML is loaded
  * 
- * 主要功能：
- * 1. 处理键盘输入事件（方向键、旋转等）
- * 2. 管理游戏画面渲染（方块、背景）
- * 3. 控制游戏动画（自动下落）
- * 4. 管理游戏状态（暂停、结束、重新开始）
+ * Main features:
+ * 1. Handles keyboard input events (arrow keys, rotation, etc.)
+ * 2. Manages game rendering (bricks, background)
+ * 3. Controls game animations (automatic descent)
+ * 4. Manages game state (pause, end, restart)
  * 
- * @author 游戏开发者
+ * @author XiangCan
  * @version 1.0
  */
 public class GuiController implements Initializable {
@@ -179,11 +175,11 @@ public class GuiController implements Initializable {
     private final Rectangle gamePanel2Clip = new Rectangle();
 
     /**
-     * FXML初始化方法
-     * 在FXML文件加载完成后自动调用，用于设置界面初始状态和事件监听
+     * FXML initialization method
+     * Automatically called after FXML file is loaded, used to set initial interface state and event listeners
      * 
-     * @param location FXML文件位置
-     * @param resources 资源包（未使用）
+     * @param location FXML file location
+     * @param resources Resource bundle (unused)
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -385,11 +381,11 @@ public class GuiController implements Initializable {
     }
 
     /**
-     * 初始化游戏视图
-     * 创建游戏背景显示矩阵和当前方块显示矩阵，启动自动下落动画
+     * Initialize game view
+     * Creates game background display matrix and current brick display matrix, starts automatic descent animation
      * 
-     * @param boardMatrix 游戏板矩阵数据
-     * @param brick 当前方块的视图数据
+     * @param boardMatrix Game board matrix data
+     * @param brick Current brick view data
      */
     public void initGameView(int[][] boardMatrix, ViewData brick) {
         // 创建游戏背景显示矩阵
@@ -577,10 +573,10 @@ public class GuiController implements Initializable {
     }
 
     /**
-     * 刷新游戏背景显示
-     * 更新游戏板上已固定的方块显示
+     * Refresh game background display
+     * Updates fixed bricks display on the game board
      * 
-     * @param board 游戏板矩阵数据
+     * @param board Game board matrix data
      */
     public void refreshGameBackground(int[][] board) {
         // 从第2行开始更新（前两行是隐藏区域）
@@ -656,9 +652,9 @@ public class GuiController implements Initializable {
     }
 
     /**
-     * 设置输入事件监听器
+     * Set input event listener
      * 
-     * @param eventListener 事件监听器实例
+     * @param eventListener Event listener instance
      */
     public void setEventListener(InputEventListener eventListener) {
         this.eventListener = eventListener;
@@ -743,7 +739,7 @@ public class GuiController implements Initializable {
     }
     
     /**
-     * 初始化对战模式视图（玩家2）
+     * Initialize versus mode view (Player 2)
      */
     public void initVsModeView(int[][] boardMatrix, ViewData brick) {
         if (gamePanel2 == null || brickPanel2 == null) {
@@ -811,7 +807,7 @@ public class GuiController implements Initializable {
     }
     
     /**
-     * 隐藏对战模式视图（玩家2）
+     * Hide versus mode view (Player 2)
      */
     public void hideVsModeView() {
         if (gameBoard2 != null) {
@@ -906,7 +902,7 @@ public class GuiController implements Initializable {
     }
     
     /**
-     * 刷新玩家2的游戏背景显示
+     * Refresh Player 2's game background display
      */
     public void refreshGameBackground2(int[][] board) {
         if (displayMatrix2 != null) {
@@ -919,7 +915,7 @@ public class GuiController implements Initializable {
     }
     
     /**
-     * 绑定玩家2的分数显示
+     * Bind Player 2's score display
      */
     public void bindScore2(IntegerProperty integerProperty) {
         if (scoreLabel2 != null) {
@@ -928,7 +924,7 @@ public class GuiController implements Initializable {
     }
     
     /**
-     * 玩家2游戏结束处理
+     * Handle Player 2 game over
      */
     public void gameOver2() {
         if (timeLine != null) {
@@ -981,10 +977,10 @@ public class GuiController implements Initializable {
     }
 
     /**
-     * 绑定分数显示
-     * 将分数属性绑定到Label，实现实时更新
+     * Bind score display
+     * Binds score property to Label for real-time updates
      * 
-     * @param integerProperty 分数属性
+     * @param integerProperty Score property
      */
     public void bindScore(IntegerProperty integerProperty) {
         if (scoreLabel != null) {
@@ -1037,8 +1033,8 @@ public class GuiController implements Initializable {
     }
 
     /**
-     * 游戏结束处理
-     * 停止自动下落动画，显示游戏结束面板
+     * Handle game over
+     * Stops automatic descent animation, displays game over panel
      */
     public void gameOver() {
         timeLine.stop(); // 停止自动下落
@@ -1070,10 +1066,10 @@ public class GuiController implements Initializable {
     }
 
     /**
-     * 开始新游戏（按钮点击时调用，显示确认对话框）
-     * 重置游戏状态，重新开始游戏
+     * Start new game (called when button is clicked, shows confirmation dialog)
+     * Resets game state and restarts the game
      * 
-     * @param actionEvent 动作事件
+     * @param actionEvent Action event
      */
     public void newGame(ActionEvent actionEvent) {
         confirmNewGame();
@@ -1246,10 +1242,10 @@ public class GuiController implements Initializable {
     }
 
     /**
-     * 暂停游戏
-     * 切换游戏的暂停/继续状态
+     * Pause game
+     * Toggles game pause/resume state
      * 
-     * @param actionEvent 动作事件
+     * @param actionEvent Action event
      */
     public void pauseGame(ActionEvent actionEvent) {
         togglePause();
@@ -1272,9 +1268,9 @@ public class GuiController implements Initializable {
                 if (pausePanel != null) {
                     pausePanel.setVisible(true); // 显示暂停提示
                 }
-                if (isVsMode && pausePanel2 != null) {
-                    pausePanel2.setVisible(true);
-                }
+                // if (isVsMode && pausePanel2 != null) {
+                //     pausePanel2.setVisible(true);
+                // }
             } else {
                 // 继续游戏
                 timeLine.play();
