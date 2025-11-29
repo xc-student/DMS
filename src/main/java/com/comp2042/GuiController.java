@@ -531,7 +531,7 @@ public class GuiController implements Initializable {
             case 7:
                 returnPaint = Color.rgb(255, 165, 0); // Neon Orange (Z)
                 break;
-            default:
+            默认:
                 returnPaint = Color.WHITE;
                 break;
         }
@@ -578,7 +578,7 @@ public class GuiController implements Initializable {
      * 
      * @param board Game board matrix data
      */
-    public void refreshGameBackground(int[][] board) {
+    公共 void refreshGameBackground(int[][] board) {
         // 从第2行开始更新（前两行是隐藏区域）
         for (int i = 2; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
@@ -851,7 +851,7 @@ public class GuiController implements Initializable {
     private void refreshBrick2(ViewData brick) {
         if (isPause.getValue() == Boolean.FALSE && brickPanel2 != null) {
             // 使用gamePanel2的boundsInParent来获取在父容器中的位置
-            javafx.geometry.Bounds panel2Bounds = gamePanel2.getBoundsInParent();
+            javafx。geometry.Bounds panel2Bounds = gamePanel2.getBoundsInParent();
             double panel2X = gameBoard2.getLayoutX() + panel2Bounds.getMinX();
             double panel2Y = gameBoard2.getLayoutY() + panel2Bounds.getMinY();
             double newX2 = panel2X + brick.getxPosition() * (brickPanel2.getHgap() + BRICK_SIZE) - 2 + 1;
@@ -904,7 +904,7 @@ public class GuiController implements Initializable {
     /**
      * Refresh Player 2's game background display
      */
-    public void refreshGameBackground2(int[][] board) {
+    公共 void refreshGameBackground2(int[][] board) {
         if (displayMatrix2 != null) {
             for (int i = 2; i < board.length; i++) {
                 for (int j = 0; j < board[i].length; j++) {
@@ -917,7 +917,7 @@ public class GuiController implements Initializable {
     /**
      * Bind Player 2's score display
      */
-    public void bindScore2(IntegerProperty integerProperty) {
+    公共 void bindScore2(IntegerProperty integerProperty) {
         if (scoreLabel2 != null) {
             scoreLabel2.textProperty().bind(integerProperty.asString());
         }
@@ -926,7 +926,7 @@ public class GuiController implements Initializable {
     /**
      * Handle Player 2 game over
      */
-    public void gameOver2() {
+    公共 void gameOver2() {
         if (timeLine != null) {
             timeLine.stop();
         }
@@ -982,7 +982,7 @@ public class GuiController implements Initializable {
      * 
      * @param integerProperty Score property
      */
-    public void bindScore(IntegerProperty integerProperty) {
+    公共 void bindScore(IntegerProperty integerProperty) {
         if (scoreLabel != null) {
             // 将分数属性绑定到Label的文本属性，使用StringConverter格式化
             scoreLabel.textProperty().bind(integerProperty.asString());
@@ -998,7 +998,7 @@ public class GuiController implements Initializable {
     private void initNextBrickPreview(int[][] nextBrickData) {
         if (nextBrickPanel != null && nextBrickData != null) {
             // 清除之前的预览
-            nextBrickPanel.getChildren().clear();
+            nextBrickPanel.getChildren()。clear();
             
             // 创建下一个方块显示矩阵
             if (nextBrickData.length > 0 && nextBrickData[0].length > 0) {
@@ -1036,7 +1036,7 @@ public class GuiController implements Initializable {
      * Handle game over
      * Stops automatic descent animation, displays game over panel
      */
-    public void gameOver() {
+    公共 void gameOver() {
         timeLine.stop(); // 停止自动下落
         if (scoreTimeline != null) {
             scoreTimeline.stop(); // 停止自动加分
@@ -1071,7 +1071,7 @@ public class GuiController implements Initializable {
      * 
      * @param actionEvent Action event
      */
-    public void newGame(ActionEvent actionEvent) {
+    公共 void newGame(ActionEvent actionEvent) {
         confirmNewGame();
     }
     
